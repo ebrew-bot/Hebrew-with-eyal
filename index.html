@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hebrew Decoding Flash Cards</title>
+  <style>
+    :root {
+      font-family: Arial, "Noto Sans Hebrew", sans-serif;
+      color: #202124;
+      background: #f7f8fa;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 28px 18px;
+      display: flex;
+      justify-content: center;
+    }
+    .app { width: min(680px, 100%); text-align: center; }
+    h1 { margin: 0 0 6px; font-size: clamp(24px, 5vw, 34px); }
+    .subtitle { margin: 0 0 22px; color: #5f6368; }
+    .counter { margin-bottom: 10px; color: #5f6368; font-size: 14px; }
+    .card {
+      width: 100%;
+      min-height: 300px;
+      border: 1px solid #dadce0;
+      border-radius: 20px;
+      background: white;
+      cursor: pointer;
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 8px rgba(60,64,67,.10);
+    }
+    .card:focus-visible, button:focus-visible {
+      outline: 3px solid #1a73e8;
+      outline-offset: 3px;
+    }
+    .main {
+      font-size: clamp(72px, 20vw, 118px);
+      line-height: 1.15;
+      font-weight: 600;
+    }
+    .main.sound { font-size: clamp(48px, 13vw, 76px); direction: ltr; }
+    .hint { margin-top: 26px; color: #5f6368; font-size: 16px; }
+    .controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 16px;
+    }
+    button.control {
+      min-height: 50px;
+      border-radius: 12px;
+      border: 1px solid #dadce0;
+      background: white;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    button.primary { background: #1a73e8; color: white; border-color: #1a73e8; }
+    button.shuffle { margin-top: 12px; width: 100%; }
+    .note { margin-top: 18px; font-size: 13px; color: #777; }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <h1>Hebrew Decoding</h1>
+    <p class="subtitle" lang="he" dir="rtl">פענוח עברית</p>
+
+    <div id="counter" class="counter">Card 1 of 5</div>
+
+    <button id="card" class="card" type="button" aria-label="Flash card. Tap to reveal the sound.">
+      <span id="main" class="main" lang="he" dir="rtl">בָּ</span>
+      <span id="hint" class="hint">Tap the card to reveal the sound</span>
+    </button>
+
+    <div class="controls">
+      <button id="prev" class="control" type="button">← Previous</button>
+      <button id="next" class="control primary" type="button">Next →</button>
+    </div>
+
+    <button id="shuffle" class="control shuffle" type="button">🔀 Shuffle Cards</button>
+    <div class="note">Prototype — sample content only</div>
+  </main>
+
+  <script>
+    const originalDeck = [
+      { hebrew: "בָּ", sound: "BA" },
+      { hebrew: "מִ", sound: "MI" },
+      { hebrew: "לוּ", sound: "LU" },
+      { hebrew: "שֶׁ", sound: "SHE" },
+      { hebrew: "כּוֹ", sound: "KO" }
+    ];
+
+    let deck = [...originalDeck];
+    let index = 0;
+    let flipped = false;
+
+    const card = document.getElementById("card");
+    const main = document.getElementById("main");
+    const hint = document.getElementById("hint");
+    const counter = document.getElementById("counter");
+
+    function render() {
+      flipped = false;
+      main.textContent = deck[index].hebrew;
+      main.className = "main";
+      main.setAttribute("dir", "rtl");
+      main.setAttribute("lang", "he");
+      hint.textContent = "Tap the card to reveal the sound";
+      counter.textContent = `Card ${index + 1} of ${deck.length}`;
+      card.setAttribute("aria-label", `Card ${index + 1}. Tap to reveal the sound.`);
+    }
+
+    card.addEventListener("click", () => {
+      flipped = !flipped;
+      if (flipped) {
+        main.textContent = deck[index].sound;
+        main.className = "main sound";
+        main.setAttribute("dir", "ltr");
+        main.setAttribute("lang", "en");
+        hint.textContent = "Tap again to see the Hebrew";
+      } else {
+        render();
+      }
+    });
+
+    document.getElementById("next").addEventListener("click", () => {
+      index = (index + 1) % deck.length;
+      render();
+    });
+
+    document.getElementById("prev").addEventListener("click", () => {
+      index = (index - 1 + deck.length) % deck.length;
+      render();
+    });
+
+    document.getElementById("shuffle").addEventListener("click", () => {
+      for (let i = deck.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [deck[i], deck[j]] = [deck[j], deck[i]];
+      }
+      index = 0;
+      render();
+    });
+
+    render();
+  </script>
+</body>
+</html>
