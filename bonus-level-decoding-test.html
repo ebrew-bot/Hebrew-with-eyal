@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bonus Level — Decode It!</title>
+<style>
+*{box-sizing:border-box} body{margin:0;font-family:Arial,"Noto Sans Hebrew",sans-serif;color:#17212b;background:linear-gradient(#fff1d8,#fffdf8 330px)}
+main{max-width:820px;margin:auto;padding:24px 16px 45px}.card{background:#fff;border:1px solid #f1dfc7;border-radius:24px;box-shadow:0 8px 24px #8b5b201a;padding:25px}
+h1{text-align:center;color:#a34b00;margin:0}.sub{text-align:center;color:#6f7781}.hidden{display:none!important}.start{text-align:center;line-height:1.6}
+.btn{border:0;border-radius:14px;padding:13px 25px;font-size:17px;font-weight:bold;cursor:pointer;background:#ffd43b;color:#18315a}
+.top{display:flex;justify-content:space-between;font-weight:bold;color:#a34b00}.track{height:11px;background:#f1e7da;border-radius:20px;overflow:hidden;margin:10px 0 20px}
+.bar{height:100%;background:#ef8d32;width:0}.prompt{text-align:center;color:#6f7781;font-weight:bold;margin-bottom:2px}
+.word{font-size:76px;text-align:center;direction:rtl;margin:5px 0 20px;min-height:100px}
+.answers{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:620px;margin:auto}
+.answer{background:#fff;border:2px solid #eadfd2;border-radius:16px;padding:15px;font-size:19px;font-weight:bold;cursor:pointer}
+.answer.correct{background:#e9f9ee;border-color:#36b85a}.answer.wrong{background:#fff0f0;border-color:#e64b4b}
+.feedback{max-width:620px;margin:17px auto;padding:17px 19px;border:2px solid #f1c99f;border-radius:18px;background:#fff8ef;line-height:1.5;text-align:center}
+.feedback.good{background:#effaf2;border-color:#9cddb0}.feedback.bad{background:#fff7f7;border-color:#efb1b1}
+.correctreading{font-size:24px;font-weight:bold;margin-top:5px}.next{text-align:center;margin-top:16px}.result{text-align:center}.scorebig{font-size:58px;color:#a34b00;font-weight:bold}
+.secret{margin:22px auto;padding:20px;border:2px dashed #7a3ee6;border-radius:18px;background:#f8f3ff;max-width:550px}.secretword{font-size:48px;direction:rtl;color:#7a3ee6;font-weight:bold}
+@media(max-width:540px){.answers{grid-template-columns:1fr}.word{font-size:58px}.card{padding:18px 12px}}
+</style>
+</head><body><main><div class="card">
+<section id="start">
+<h1>⭐ Bonus Level — Decode It!</h1>
+<p class="sub">5 decoding challenges • 4 choices • New combinations every round</p>
+<div class="start"><div style="font-size:36px">🧩</div>
+<p>Read each Hebrew combination and choose how it sounds.<br>The combinations <b>do not have to be real Hebrew words.</b></p>
+<button class="btn" onclick="startGame()">Start →</button></div>
+</section>
+<section id="game" class="hidden">
+<div class="top"><span id="qcount"></span><span id="score"></span></div><div class="track"><div class="bar" id="bar"></div></div>
+<div class="prompt">How would you read this?</div><div class="word" id="word"></div><div class="answers" id="answers"></div>
+<div id="feedback" class="feedback hidden"></div><div class="next"><button id="next" class="btn hidden" onclick="nextQuestion()">Next →</button></div>
+</section>
+<section id="result" class="hidden result"><h1>Bonus Round Complete!</h1><div class="scorebig" id="finalscore"></div><p id="resultmsg"></p>
+<div id="secret" class="secret hidden"><b>🎉 Perfect Score!</b><p>You unlocked the Bonus secret word:</p><div class="secretword" id="secretword"></div></div>
+<button class="btn" onclick="startGame()">Play Again ↻</button></section>
+</div></main>
+<script>
+// Consonant sounds drawn from Levels 1–2 plus the two-sound forms used in Level 3.
+// Final letters are used only at the end of a generated combination.
+const consonants=[
+ {h:"בּ",r:"b"},{h:"ב",r:"v"},{h:"ג",r:"g"},{h:"ד",r:"d"},{h:"ה",r:"h"},
+ {h:"ז",r:"z"},{h:"ח",r:"ch"},{h:"ט",r:"t"},{h:"י",r:"y"},
+ {h:"כּ",r:"k"},{h:"כ",r:"ch"},{h:"ל",r:"l"},{h:"מ",r:"m"},{h:"נ",r:"n"},
+ {h:"ס",r:"s"},{h:"פּ",r:"p"},{h:"פ",r:"f"},{h:"צ",r:"ts"},{h:"ק",r:"k"},
+ {h:"ר",r:"r"},{h:"שׁ",r:"sh"},{h:"שׂ",r:"s"},{h:"ת",r:"t"}
+];
+const finals=[{h:"ך",r:"ch"},{h:"ם",r:"m"},{h:"ן",r:"n"},{h:"ף",r:"f"},{h:"ץ",r:"ts"}];
+
+// Vowels from Category 5. Shva is used as a silent/very-short connector.
+// Holam/Shuruk are rendered with vav where appropriate.
+const vowels=[
+ {mark:"ַ",sound:"a",type:"mark"},{mark:"ָ",sound:"a",type:"mark"},
+ {mark:"ֶ",sound:"e",type:"mark"},{mark:"ֵ",sound:"e",type:"mark"},
+ {mark:"ִ",sound:"i",type:"mark"},{mark:"ֹ",sound:"o",type:"mark"},
+ {mark:"ֻ",sound:"u",type:"mark"},{mark:"ְ",sound:"",type:"mark"},
+ {mark:"וּ",sound:"u",type:"after"}
+];
+const secretWords=["סוֹד","כּוֹכָב","שָׁלוֹם","חָבֵר","שִׂמְחָה"];
+let round=[],i=0,score=0,answered=false,secretWord="";
+
+function pick(a){return a[Math.floor(Math.random()*a.length)]}
+function shuffle(a){a=[...a];for(let n=a.length-1;n>0;n--){let j=Math.floor(Math.random()*(n+1));[a[n],a[j]]=[a[j],a[n]]}return a}
+function cap(s){return s.charAt(0).toUpperCase()+s.slice(1)}
+function makeSyllable(c,v){
+ let heb=v.type==="after" ? c.h+v.mark : c.h+v.mark;
+ return {heb, roman:c.r+v.sound, c:c.r, v:v.sound};
+}
+function generateWord(){
+ // 2–4 syllables. Occasionally finish with a final letter without a vowel.
+ let count=2+Math.floor(Math.random()*3), parts=[], heb="", roman="";
+ for(let x=0;x<count;x++){
+   let c=pick(consonants), v=pick(vowels);
+   // Avoid too many silent shvas; they are useful but should not dominate.
+   if(v.sound==="" && Math.random()<0.55) v=pick(vowels.filter(q=>q.sound!==""));
+   let s=makeSyllable(c,v); parts.push(s); heb+=s.heb; roman+=s.roman;
+ }
+ if(Math.random()<0.30){
+   let f=pick(finals); heb+=f.h; roman+=f.r; parts.push({heb:f.h,roman:f.r,c:f.r,v:"",final:true});
+ }
+ return {heb, roman:cap(roman), parts};
+}
+function mutate(q){
+ let variants=new Set(), base=q.roman.toLowerCase();
+ const vowelSounds=["a","e","i","o","u"];
+ let tries=0;
+ while(variants.size<3 && tries++<100){
+   let parts=q.parts.map(p=>({...p}));
+   let idx=Math.floor(Math.random()*parts.length);
+   if(parts[idx].final){
+     let choices=["m","n","f","ch","ts"].filter(x=>x!==parts[idx].c);parts[idx].c=pick(choices);parts[idx].roman=parts[idx].c;
+   }else if(Math.random()<0.70){
+     let choices=vowelSounds.filter(x=>x!==parts[idx].v);let nv=pick(choices);parts[idx].v=nv;parts[idx].roman=parts[idx].c+nv;
+   }else{
+     let choices=["b","v","g","d","h","z","ch","t","y","k","l","m","n","s","p","f","ts","r","sh"].filter(x=>x!==parts[idx].c);
+     let nc=pick(choices);parts[idx].c=nc;parts[idx].roman=nc+parts[idx].v;
+   }
+   let s=parts.map(p=>p.roman).join("");
+   if(s!==base) variants.add(cap(s));
+ }
+ return [...variants].slice(0,3);
+}
+function buildRound(){
+ let out=[],seen=new Set();
+ while(out.length<5){
+   let q=generateWord(); if(seen.has(q.heb))continue;seen.add(q.heb);
+   q.choices=shuffle([q.roman,...mutate(q)]);out.push(q);
+ }
+ return out;
+}
+function startGame(){
+ round=buildRound();i=0;score=0;secretWord=pick(secretWords);
+ document.getElementById("start").classList.add("hidden");document.getElementById("result").classList.add("hidden");document.getElementById("game").classList.remove("hidden");show();
+}
+function show(){
+ answered=false;let q=round[i];qcount.textContent=`Question ${i+1} / 5`;document.getElementById("score").textContent=`Score: ${score}`;
+ bar.style.width=`${i*20}%`;word.textContent=q.heb;answers.innerHTML="";feedback.className="feedback hidden";next.classList.add("hidden");
+ q.choices.forEach(choice=>{let b=document.createElement("button");b.className="answer";b.textContent=choice;b.onclick=()=>choose(b,choice,q);answers.appendChild(b)});
+}
+function choose(button,choice,q){
+ if(answered)return;answered=true;let ok=choice===q.roman;
+ if(ok){score++;button.classList.add("correct")}else{button.classList.add("wrong");[...document.querySelectorAll(".answer")].find(x=>x.textContent===q.roman)?.classList.add("correct")}
+ document.querySelectorAll(".answer").forEach(x=>x.disabled=true);document.getElementById("score").textContent=`Score: ${score}`;
+ feedback.className=`feedback ${ok?"good":"bad"}`;
+ feedback.innerHTML=`<b>${ok?"✓ Correct!":"Not quite."}</b><div class="correctreading">${q.roman}</div>`;
+ next.textContent=i===4?"See My Score →":"Next →";next.classList.remove("hidden");bar.style.width=`${(i+1)*20}%`;
+}
+function nextQuestion(){if(i<4){i++;show()}else finish()}
+function finish(){
+ game.classList.add("hidden");result.classList.remove("hidden");finalscore.textContent=`${score} / 5`;
+ let perfect=score===5;resultmsg.textContent=perfect?"Excellent decoding! You got all five correct.":"Nice work! Try another round for 5 / 5.";
+ secret.classList.toggle("hidden",!perfect);secretword.textContent=secretWord;
+}
+</script></body></html>
