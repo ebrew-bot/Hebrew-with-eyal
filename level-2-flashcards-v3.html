@@ -1,0 +1,68 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Level 2 — Letters + Sounds</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;color:#17212b;background:linear-gradient(#eaf7ff,#fffdf7 330px)}main{max-width:820px;margin:auto;padding:24px 16px 45px}.card{background:#fff;border:1px solid #d9ecfb;border-radius:24px;box-shadow:0 8px 24px #1050911a;padding:25px}h1{text-align:center;color:#064cae;margin:0}.sub{text-align:center;color:#647487}.hidden{display:none!important}.start{text-align:center;line-height:1.6}.btn{border:0;border-radius:14px;padding:13px 25px;font-size:17px;font-weight:bold;cursor:pointer;background:#ffd43b;color:#18315a}.top{display:flex;justify-content:space-between;font-weight:bold;color:#064cae}.track{height:11px;background:#e7eef5;border-radius:20px;overflow:hidden;margin:10px 0 22px}.bar{height:100%;background:#0867d8;width:0}.letter{font-size:120px;text-align:center;direction:rtl;margin:8px 0 22px}.answers{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:620px;margin:auto}.answer{background:white;border:2px solid #dce8f2;border-radius:16px;padding:15px;font-size:18px;font-weight:bold;cursor:pointer}.answer.correct{background:#e9f9ee;border-color:#36b85a}.answer.wrong{background:#fff0f0;border-color:#e64b4b}.feedback{max-width:620px;margin:17px auto;padding:17px 19px;border:2px solid #a7d2f7;border-radius:18px;background:#f1f8ff;line-height:1.5}.feedback.good{background:#effaf2;border-color:#9cddb0}.feedback.bad{background:#fff7f7;border-color:#efb1b1}.next{text-align:center;margin-top:16px}.result{text-align:center}.scorebig{font-size:58px;color:#064cae;font-weight:bold}.secret{margin:22px auto;padding:20px;border:2px dashed #7a3ee6;border-radius:18px;background:#f8f3ff;max-width:550px}.secretword{font-size:48px;direction:rtl;color:#7a3ee6;font-weight:bold}@media(max-width:540px){.answers{grid-template-columns:1fr}.letter{font-size:95px}.card{padding:18px 12px}}
+</style></head><body><main><div class="card">
+<section id="start"><h1>Level 2 — Letters + Sounds</h1><p class="sub">10 random letters • 4 choices • 1 secret word</p><div class="start"><div style="font-size:34px">🔒</div><p>Choose the correct answer for each Hebrew letter or letter form.<br>Get <b>10 out of 10</b> correct to unlock the class <b>secret Hebrew word!</b></p><button class="btn" onclick="startGame()">Start →</button></div></section>
+<section id="game" class="hidden"><div class="top"><span id="qcount"></span><span id="score"></span></div><div class="track"><div class="bar" id="bar"></div></div><div class="letter" id="letter"></div><div class="answers" id="answers"></div><div id="feedback" class="feedback hidden"></div><div class="next"><button id="next" class="btn hidden" onclick="nextQuestion()">Next →</button></div></section>
+<section id="result" class="hidden result"><h1>Round Complete!</h1><div class="scorebig" id="finalscore"></div><p id="resultmsg"></p><div id="secret" class="secret hidden"><b>🎉 Perfect Score!</b><p>You unlocked the class secret word:</p><div class="secretword" id="secretword"></div><p>Remember it and share it with the class!</p></div><button class="btn" onclick="startGame()">Play Again ↻</button></section>
+</div></main><script>
+const letters=[
+["א","Aleph","אָלֶף","Silent unless it carries a vowel like the word אלף."],
+["ב","Bet / Vet","בֵּית","B with a dot; V without a dot. It’s always a B sound when it’s at the beginning of the word “Bee”."],
+["ג","Gimel","גִּימֶל","G as in go."],
+["ד","Dalet","דָּלֶת","D as in dog."],
+["ה","Hey","הֵא","H as in hat; it can also be silent when used as a vowel."],
+["ו","Vav","וָו","V as in van; it can also help make O or U vowel sounds."],
+["ז","Zayin","זַיִן","Z as in zoo."],
+["ח","Chet","חֵית","A throaty CH sound."],
+["ט","Tet","טֵית","T as in top."],
+["י","Yud","יוֹד","Y as in yes; it can also help represent an EE sound."],
+["כ","Kaf / Chaf","כַּף","K with a dot; CH without a dot."],
+["ל","Lamed","לָמֶד","L as in lamp."],
+["מ","Mem","מֵם","M as in mom."],
+["נ","Nun","נוּן","N as in nose."],
+["ס","Samekh","סָמֶךְ","S as in sun."],
+["ע","Ayin","עַיִן","Similar to Aleph in sound and can be silent unless it carries a vowel."],
+["פ","Pay / Fay","פֵּא","P with a dot; F without a dot."],
+["צ","Tsadee","צָדִי","TS as in cats."],
+["ק","Koof","קוֹף","K as in kite."],
+["ר","Resh","רֵישׁ","R as in Rainbow."],
+["ש","Shin / Sin","שִׁין","SH with the dot on the right; S with the dot on the left."],
+["ת","Tav","תָּו","T as in top."],
+
+["ך","Final Chaf","כַף סוֹפִית","Final form of the letter כ; usually makes the CH sound and not the K sound."],
+["ם","Final Mem","מֵם סוֹפִית","Final form of מ; M."],
+["ן","Final Nun","נוּן סוֹפִית","Final form of נ; N."],
+["ף","Final Fay","פֵא סוֹפִית","Final form of the letter פ; makes the F sound and not the P sound."],
+["ץ","Final Tsadee","צָדִי סוֹפִית","Final form of צ; TS."],
+
+["בּ","Bet","בּ","B sound."],
+["ב","Vet","ב","V sound."],
+["כּ","Kaf","כּ","K sound."],
+["כ","Chaf","כ","CH sound."],
+["פּ","Pay","פּ","P sound."],
+["פ","Fay","פ","F sound."],
+["שׁ","Shin","שׁ","SH sound."],
+["שׂ","Sin","שׂ","S sound."]
+];
+
+const category1 = letters.slice(0,22);
+const category2 = letters.slice(22,27);
+const category3 = letters.slice(27,35);
+const words=["סוֹד","כּוֹכָב","שָׁלוֹם","חָבֵר","שִׂמְחָה"];let round=[],i=0,score=0,answered=false,word="";
+function sh(a){a=[...a];for(let n=a.length-1;n;n--){let j=Math.floor(Math.random()*(n+1));[a[n],a[j]]=[a[j],a[n]]}return a}
+function startGame(){
+let guaranteed=[sh(category1)[0],sh(category2)[0],sh(category3)[0]];
+let used=new Set(guaranteed);
+let remaining=sh(letters.filter(x=>!used.has(x))).slice(0,7);
+round=sh([...guaranteed,...remaining]);
+i=0;score=0;word=words[Math.floor(Math.random()*words.length)];
+start.classList.add("hidden");result.classList.add("hidden");game.classList.remove("hidden");show()
+}
+function show(){answered=false;let x=round[i];qcount.textContent=`Question ${i+1} / 10`;document.getElementById("score").textContent=`Score: ${score}`;bar.style.width=`${i*10}%`;letter.textContent=x[0];feedback.className="feedback hidden";next.classList.add("hidden");answers.innerHTML="";
+let choices=sh([x,...sh(letters.filter(y=>y[1]!=x[1])).slice(0,3)]);
+choices.forEach(c=>{let b=document.createElement("button");b.className="answer";b.textContent=c[1];b.onclick=()=>pick(b,c,x);answers.appendChild(b)})}
+function pick(b,c,x){if(answered)return;answered=true;let ok=c[1]==x[1];if(ok){score++;b.classList.add("correct")}else{b.classList.add("wrong");[...document.querySelectorAll(".answer")].find(z=>z.textContent==x[1])?.classList.add("correct")}document.querySelectorAll(".answer").forEach(z=>z.disabled=true);document.getElementById("score").textContent=`Score: ${score}`;feedback.className=`feedback ${ok?"good":"bad"}`;feedback.innerHTML=`<b>${ok?"✓ Correct!":"Not quite — the correct answer is "+x[1]+"."}</b><br><span dir="rtl">${x[2]}</span> · ${x[1]}<br>${x[3]}`;next.textContent=i==9?"See My Score →":"Next →";next.classList.remove("hidden");bar.style.width=`${(i+1)*10}%`}
+function nextQuestion(){if(i<9){i++;show()}else finish()}
+function finish(){game.classList.add("hidden");result.classList.remove("hidden");finalscore.textContent=`${score} / 10`;let perfect=score==10;resultmsg.textContent=perfect?"You got every letter correct!":"Nice work! Try again for 10 / 10 to unlock the secret word.";secret.classList.toggle("hidden",!perfect);secretword.textContent=word}
+</script></body></html>
