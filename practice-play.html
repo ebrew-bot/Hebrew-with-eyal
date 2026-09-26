@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Practice / Play — Choose Your Level</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,"Noto Sans Hebrew",sans-serif;color:#17212b;background:linear-gradient(180deg,#fff4c9,#fffaf0 270px,#eef8ff)}
+main{max-width:1100px;margin:auto;padding:22px 16px 32px}
+.hero{text-align:center;margin-bottom:18px}
+.hero .icon{font-size:34px}.hero h1{font-size:36px;color:#a74e00;margin:2px 0 4px}.hero p{color:#687889;margin:0}
+.levels{display:grid;grid-template-columns:repeat(4,180px);justify-content:center;gap:18px}
+.level{background:#fff;border:2px solid #f0dfbc;border-radius:20px;padding:22px 14px;min-width:0;min-height:250px;display:flex;flex-direction:column;text-align:center}
+.badge{align-self:center;padding:5px 9px;border-radius:99px;font-size:12px;font-weight:800;margin-bottom:10px}
+.l1 .badge{background:#e8f4ff;color:#0759ad}.l2 .badge{background:#fff1c7;color:#8c5800}.l3 .badge{background:#eee8ff;color:#5932a7}.bonus .badge{background:#ffe7d1;color:#a34b00}
+.level h2{font-size:21px;color:#17375e;margin:0 0 7px}.level p{font-size:14px;line-height:1.35;color:#687889;margin:0 0 12px;flex:1}
+.play{display:block;margin-top:auto;padding:11px 8px;border-radius:12px;font-weight:800;font-size:14px;text-decoration:none;background:#ffd43b;color:#26375b}
+.note{text-align:center;color:#77828e;font-size:13px;margin:16px 0 0}
+@media(max-width:850px){.levels{grid-template-columns:repeat(2,180px)}}
+@media(max-width:430px){.levels{grid-template-columns:180px}.hero h1{font-size:31px}}
+</style>
+</head>
+<body>
+<main>
+<section class="hero">
+<div class="icon">🎮</div>
+<h1>Practice / Play</h1>
+<p>Choose your level and start practicing!</p>
+</section>
+
+<section class="levels">
+<article class="level l1">
+<span class="badge">LEVEL 1</span>
+<h2>Letters</h2>
+<p>Start with the Hebrew alphabet.</p>
+<a class="play" href="https://ebrew-bot.github.io/Hebrew-with-eyal/level-1-flashcards.html">Play →</a>
+</article>
+
+<article class="level l2">
+<span class="badge">LEVEL 2</span>
+<h2>Letters + Sounds</h2>
+<p>Final letters and letters with different sounds.</p>
+<a class="play" href="https://ebrew-bot.github.io/Hebrew-with-eyal/level-2-flashcards-v3.html">Play →</a>
+</article>
+
+<article class="level l3">
+<span class="badge">LEVEL 3</span>
+<h2>Letters + Vowels</h2>
+<p>Practice letters, sounds and vowels together.</p>
+<a class="play" href="https://ebrew-bot.github.io/Hebrew-with-eyal/level-3-flashcards-v6.html">Play →</a>
+</article>
+
+<article class="level bonus">
+<span class="badge">⭐ BONUS</span>
+<h2>Decode It!</h2>
+<p>Read and decode Hebrew sound combinations.</p>
+<a class="play" href="https://ebrew-bot.github.io/Hebrew-with-eyal/bonus-level-decoding-test.html">Play →</a>
+</article>
+</section>
+
+<p class="note">Levels 1–3: 10 questions per round • Bonus: 5 decoding challenges • Perfect score unlocks the class secret word!</p>
+</main>
+</body>
+</html>
