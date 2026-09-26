@@ -1,0 +1,133 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Hebrew Aleph Bet</title>
+<style>
+:root{
+  --blue:#0867d8; --deep:#064cae; --sky:#eaf7ff; --cream:#fffdf7;
+  --yellow:#ffd43b; --green:#59c936; --purple:#7a3ee6; --pink:#ff4fa3;
+  --ink:#17212b; --muted:#647487;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  color:var(--ink);
+  font-family:Arial,"Noto Sans Hebrew",sans-serif;
+  background:
+    radial-gradient(circle at 5% 4%, rgba(255,212,59,.35) 0 45px, transparent 46px),
+    radial-gradient(circle at 94% 8%, rgba(122,62,230,.15) 0 55px, transparent 56px),
+    linear-gradient(180deg,#eef9ff 0,#fffdf7 240px,#fffdf7 100%);
+}
+main{max-width:1040px;margin:auto;padding:22px 18px 48px}
+h1{
+  margin:4px 0 5px;text-align:center;color:var(--deep);
+  font-size:clamp(30px,5vw,44px);letter-spacing:-.5px
+}
+.intro{text-align:center;color:var(--muted);margin:0 0 25px;font-size:16px}
+.sec{
+  position:relative;margin:22px 0;padding:20px;
+  background:rgba(255,255,255,.86);border:1px solid #d9ecfb;border-radius:22px;
+  box-shadow:0 7px 22px rgba(16,80,145,.08);overflow:hidden
+}
+.sec:before{content:"";position:absolute;left:0;top:0;width:7px;height:100%;background:var(--blue)}
+.sec:nth-of-type(2):before{background:var(--yellow)}
+.sec:nth-of-type(3):before{background:var(--green)}
+.sec:nth-of-type(4):before{background:var(--purple)}
+.sec:nth-of-type(5):before{background:var(--pink)}
+.sec:nth-of-type(6):before{background:#ff8b2c}
+h2{color:var(--deep);font-size:21px;margin:0 0 6px;padding-left:4px}
+.legend{color:var(--muted);font-size:14px;margin:0 0 14px;padding-left:4px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:12px}
+.flip{height:165px;border:0;padding:0;background:transparent;cursor:pointer;perspective:900px;font:inherit;color:inherit}
+.flip:focus-visible{outline:3px solid var(--yellow);outline-offset:3px;border-radius:17px}
+.inner{display:block;position:relative;width:100%;height:100%}
+.face{position:absolute;inset:0;border:2px solid #e0ebf3;border-radius:17px;background:#fff;box-shadow:0 4px 10px rgba(16,70,120,.07);display:flex;align-items:center;justify-content:center;padding:12px;transition:opacity .18s ease,transform .18s ease}
+.front{font-size:48px;font-weight:600;opacity:1;transform:scale(1)}
+.back{flex-direction:column;text-align:center;background:linear-gradient(135deg,#f0f8ff,#fffdf5);border-color:#9bcef6;overflow:auto;opacity:0;transform:scale(.96);pointer-events:none}
+.flip.flipped .front{opacity:0;transform:scale(.96);pointer-events:none}
+.flip.flipped .back{opacity:1;transform:scale(1);pointer-events:auto}
+.name{font-size:17px;font-weight:bold;color:var(--deep);line-height:1.2}
+.heb{font-size:17px;color:var(--purple);margin-top:3px}
+.desc{font-size:13px;line-height:1.3;margin-top:8px}.example{color:var(--purple);font-weight:800;font-size:15px}
+@media (hover:hover) and (pointer:fine){.flip:hover .front{border-color:#8dc7f5;box-shadow:0 7px 14px rgba(16,70,120,.12)}}
+
+.menu{margin:0 auto 24px;padding:16px;background:rgba(255,255,255,.9);border:1px solid #d9ecfb;border-radius:20px;box-shadow:0 7px 22px rgba(16,80,145,.08)}
+.menu-title{text-align:center;color:var(--deep);font-size:20px;font-weight:700;margin:0 0 12px}
+.menu-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.menu-btn{display:flex;align-items:center;justify-content:center;min-height:56px;padding:8px 10px;text-align:center;text-decoration:none;background:#fff;border:2px solid #dcecf8;border-radius:14px;color:var(--deep);font-weight:700;font-size:14px;line-height:1.25;box-shadow:0 3px 8px rgba(16,70,120,.06)}
+.menu-btn:hover{border-color:#8dc7f5;background:#f4faff}
+.back-menu{display:block;width:max-content;margin:16px auto 0;padding:7px 12px;border-radius:999px;text-decoration:none;color:var(--deep);background:#edf7ff;font-size:13px;font-weight:700}
+
+@media(max-width:600px){
+  main{padding:16px 11px 34px}
+  .sec{padding:17px 13px;border-radius:18px}
+  .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+  .flip{height:150px}
+  .front{font-size:42px}
+  .name,.heb{font-size:16px}
+  .desc{font-size:12.5px}
+  .menu-grid{grid-template-columns:repeat(2,1fr);gap:7px}
+  .menu{padding:12px;margin-bottom:16px}.menu-btn{min-height:52px;font-size:12.5px;padding:7px}.menu-title{font-size:18px}
+}
+</style></head>
+<body><main><h1>Hebrew Aleph Bet</h1><p class="intro">Tap any card to flip it and see its name and sound.</p><nav class="menu" id="review-menu">
+<div class="menu-title">Choose What to Review</div>
+<div class="menu-grid">
+<a class="menu-btn" href="#section-1">Letters<br>אוֹתִיּוֹת</a>
+<a class="menu-btn" href="#section-2">Final Letters<br>אוֹתִיּוֹת סופיות</a>
+<a class="menu-btn" href="#section-3">Letters with Two Sounds<br>אוֹתִיּוֹת עִם שְׁנֵי צְלִילִים</a>
+<a class="menu-btn" href="#section-4">Letters as Vowels<br>אוֹתִיּוֹת מְיֻחָדוֹת</a>
+<a class="menu-btn" href="#section-5">Vowels<br>נִקּוּד</a>
+<a class="menu-btn" href="#section-6">Special Letters &amp; Vowels<br>יוֹצְאֵי דֹּפֶן</a>
+</div></nav><div id="app"></div></main>
+<script>
+const sections=[
+["Letters · אוֹתִיּוֹת","The complete Hebrew alphabet.",[
+["א","Aleph","אָלֶף","Silent unless it carries a vowel like the word אלף."],["ב","Bet / Vet","בֵּית","B with a dot; V without a dot. It’s always a B sound when it’s at the beginning of the word “Bee”."],["ג","Gimel","גִּימֶל","G as in go."],["ד","Dalet","דָּלֶת","D as in dog."],["ה","Hey","הֵא","H as in hat; it can also be silent when used as a vowel."],["ו","Vav","וָו","V as in van; it can also help make O or U vowel sounds."],["ז","Zayin","זַיִן","Z as in zoo."],["ח","Chet","חֵית","A throaty CH sound."],["ט","Tet","טֵית","T as in top."],["י","Yud","יוֹד","Y as in yes; it can also help represent an EE sound."],["כ","Kaf / Chaf","כַּף","K with a dot; CH without a dot."],["ל","Lamed","לָמֶד","L as in lamp."],["מ","Mem","מֵם","M as in mom."],["נ","Nun","נוּן","N as in nose."],["ס","Samekh","סָמֶךְ","S as in sun."],["ע","Ayin","עַיִן","Similar to Aleph in sound and can be silent unless it carries a vowel."],["פ","Pay / Fay","פֵּא","P with a dot; F without a dot."],["צ","Tsadee","צָדִי","TS as in cats."],["ק","Koof","קוֹף","K as in kite."],["ר","Resh","רֵישׁ","R as in Rainbow."],["ש","Shin / Sin","שִׁין","SH with the dot on the right; S with the dot on the left."],["ת","Tav","תָּו","T as in top."]]],
+["Final Letters · אוֹתִיּוֹת סופיות","These forms appear only at the end of a word.",[
+["ך","Final Chaf","כַף סוֹפִית","Final form of the letter כ; usually makes the CH sound and not the K sound."],["ם","Final Mem","מֵם סוֹפִית","Final form of מ; M."],["ן","Final Nun","נוּן סוֹפִית","Final form of נ; N."],["ף","Final Fay","פֵא סוֹפִית","Final form of the letter פ; makes the F sound and not the P sound."],["ץ","Final Tsadee","צָדִי סוֹפִית","Final form of צ; TS."]]],
+["Letters with Two Sounds · אוֹתִיּוֹת עִם שְׁנֵי צְלִילִים","The dot or its position changes the sound.",[
+["בּ / ב","Bet / Vet","בֵּית","בּ = B • ב = V"],["כּ / כ","Kaf / Chaf","כַּף","כּ = K • כ = CH"],["פּ / פ","Pay / Fay","פֵּא","פּ = P • פ = F"],["שׁ / שׂ","Shin / Sin","שִׁין","שׁ = SH • שׂ = S"]]],
+["Letters as Vowels · אוֹתִיּוֹת מְיֻחָדוֹת","These letters can also help represent vowel sounds.",[
+["א","Aleph","אָלֶף","Can carry a vowel and help mark vowel structure."],["ה","Hey","הֵא","At the end of many words, ה can help indicate a vowel ending."],["ו","Vav","וָו","וֹ commonly represents O; וּ commonly represents U. It can also be V."],["י","Yud","יוֹד","Often helps represent an EE / I sound. It can also be Y."]]],
+["Vowels · נִקּוּד","Vowel marks are shown with ב so they are easy to see.",[
+["בַּ","Patach","פַּתָּח","AH sound. Sounds like: <span class="example">Bar</span>."],["בָּ","Kamatz","קָמָץ","Usually AH in modern Hebrew. Sounds like: <span class="example">Balloon</span>."],["בֶּ","Segol","סֶגּוֹל","EH sound. Sounds like: <span class="example">Bear</span>."],["בֵּ","Tzere","צֵירֵי","EH sound. Sounds like: <span class="example">Bay</span>."],["בִּ","Hirik","חִירִיק","EE sound. Sounds like: <span class="example">Bee</span>."],["בֹּ","Holam","חוֹלָם","OH sound. Sounds like: <span class="example">Boil</span>."],["בֻּ","Kubutz","קֻבּוּץ","OO sound. Sounds like: <span class="example">Boogie</span>."],["בּוּ","Shuruk","שׁוּרוּק","OO sound, written with Vav and a dot. Sounds like: <span class="example">Book</span>."],["בְּ","Shva","שְׁוָא","Can be silent or a very short vowel depending on the word. Sounds like: <span class="example">Bright</span>."]]],
+["Special Letters & Vowels · יוֹצְאֵי דֹּפֶן","Special cases that may look or sound different from the usual pattern.",[
+["אָ","Kamatz Katan","קָמָץ קָטָן","Looks like a regular Kamatz, but makes an O sound instead of an AH sound. Example: אָנִיָּה (ship)."],
+["תּ","Tav with Dagesh","תּ","The dot changes how the letter looks, but does not change its T sound."],
+["הּ","Hey with Dagesh","הּ","The dot changes how the letter looks, but does not change its H sound."]
+]]
+];
+const app=document.getElementById("app");
+sections.forEach((s,si)=>{
+  const sec=document.createElement("section");
+  sec.className="sec";
+  sec.id=`section-${si+1}`;
+  sec.innerHTML=`<h2>${si+1}. ${s[0]}</h2><p class="legend">${s[1]}</p><div class="grid"></div><a class="back-menu" href="#review-menu">↑ Back to Menu</a>`;
+  const grid=sec.querySelector(".grid");
+  s[2].forEach(x=>{
+    const b=document.createElement("button");
+    b.className="flip";
+    b.type="button";
+    b.setAttribute("aria-label",`${x[0]} — tap to reveal`);
+    b.setAttribute("aria-pressed","false");
+    b.innerHTML=`<span class="inner"><span class="face front" dir="rtl">${x[0]}</span><span class="face back"><span class="name">${x[1]}</span><span class="heb" dir="rtl">${x[2]}</span><span class="desc">${x[3]}</span></span></span>`;
+    let flipTimer;
+    b.addEventListener("click",()=>{
+      document.querySelectorAll(".flip.flipped").forEach(other=>{
+        if(other!==b){other.classList.remove("flipped");other.setAttribute("aria-pressed","false");}
+      });
+      clearTimeout(flipTimer);
+      const nowFlipped=!b.classList.contains("flipped");
+      b.classList.toggle("flipped",nowFlipped);
+      b.setAttribute("aria-pressed",String(nowFlipped));
+      if(nowFlipped){
+        flipTimer=setTimeout(()=>{
+          b.classList.remove("flipped");
+          b.setAttribute("aria-pressed","false");
+        },4000);
+      }
+    });
+    grid.appendChild(b);
+  });
+  app.appendChild(sec);
+});
+</script></body></html>
