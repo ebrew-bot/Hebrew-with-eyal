@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>V'ahavta · Prayer Challenge</title>
+<style>
+:root{
+ --blue:#3157a4;--blue2:#5476bd;--purple:#7357d8;--ink:#26324a;--muted:#71809a;
+ --cream:#fffaf0;--sky:#eef7ff;--line:#dbe6f4;--green:#e5f7eb;--green-line:#79c992;
+ --red:#fff0f0;--red-line:#e69696;--yellow:#fff3c8
+}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;min-height:100vh;color:var(--ink);font-family:Arial,Helvetica,sans-serif;
+background:radial-gradient(circle at 8% 9%,rgba(115,87,216,.10) 0 46px,transparent 47px),
+radial-gradient(circle at 92% 17%,rgba(255,196,77,.18) 0 58px,transparent 59px),
+linear-gradient(180deg,var(--sky) 0%,#f8fbff 48%,var(--cream) 100%)}
+.wrap{max-width:760px;margin:0 auto;padding:10px 16px 24px}.hero{text-align:center;margin:0 auto 10px}
+.kicker{display:inline-block;padding:5px 12px;border-radius:999px;background:#e8f0ff;color:var(--blue);font-size:12px;font-weight:800;letter-spacing:.04em;text-transform:uppercase}
+h1{margin:6px 0 3px;color:var(--blue);font-size:29px;line-height:1.05}h2{color:var(--blue)}
+.hebrew-title,.heb{direction:rtl;color:var(--purple);font-weight:800}.hebrew-title{font-size:22px;margin-bottom:3px}.heb{font-size:30px;line-height:1.55}
+.subtitle,.small{font-size:13px;color:var(--muted)}
+.card{position:relative;overflow:hidden;background:rgba(255,255,255,.96);border:1.5px solid var(--line);border-radius:24px;padding:18px;box-shadow:0 10px 28px rgba(49,87,164,.09);margin:10px 0}
+.card:before{content:"";position:absolute;width:90px;height:90px;border-radius:50%;background:rgba(255,211,94,.15);right:-35px;top:-38px}
+.center{text-align:center}.nav{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+button{border:0;border-radius:15px;padding:12px 14px;font-size:15px;font-weight:800;cursor:pointer;background:var(--blue);color:#fff;box-shadow:0 4px 10px rgba(49,87,164,.12)}
+button.secondary{background:#eef2ff;color:var(--purple);box-shadow:none}button:disabled{cursor:default}
+.progress{height:9px;background:#edf1f7;border-radius:999px;overflow:hidden;margin:8px 0 12px}.progress>div{height:100%;background:linear-gradient(90deg,var(--blue2),var(--purple));transition:width .25s}
+#prompt{font-size:18px;margin:12px 0 6px}.choice{display:block;width:100%;margin:8px 0;background:#fff;color:var(--ink);border:2px solid #e2e9f4;box-shadow:0 3px 9px rgba(49,87,164,.05)}
+.choice.heb{font-size:23px}.choice:hover{border-color:#aebfe0}.choice.correct{background:var(--green);border-color:var(--green-line)}.choice.wrong{background:var(--red);border-color:var(--red-line)}
+.feedback{position:relative;text-align:center;min-height:28px;font-weight:800;margin:10px 0}.phrase{position:relative;padding:13px;border-bottom:1px solid var(--line);cursor:pointer;border-radius:14px}.phrase.open{background:var(--yellow)}.meaning{display:none;margin-top:6px}.phrase.open .meaning{display:block}
+.answerbox{min-height:66px;border:2px dashed #b8c8e5;border-radius:16px;padding:10px;display:flex;gap:7px;flex-wrap:wrap;justify-content:center;background:#f8fbff}
+.wordbank{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:16px 0}.word{font-size:22px;direction:rtl}.tag{display:inline-block;padding:5px 9px;border-radius:12px;background:#e8f0ff;margin:3px}
+.stats{display:flex;justify-content:center;gap:24px;flex-wrap:wrap;font-weight:800}.hidden{display:none!important}
+#home .nav button:last-child:nth-child(odd){grid-column:1/-1}.menu-note{color:var(--muted);font-size:13px;margin:4px 0 14px}
+@media(max-width:520px){.wrap{padding:10px 11px 24px}.card{padding:14px;border-radius:21px}.nav{grid-template-columns:1fr}.nav button{grid-column:auto!important}.heb{font-size:25px}h1{font-size:27px}}
+</style>
+</head>
+<body><main class="wrap">
+<header class="hero">
+ <div class="kicker">Advanced · Prayer</div>
+ <h1>V'ahavta Prayer Challenge</h1>
+ <div class="hebrew-title">וְאָהַבְתָּ</div>
+ <div class="subtitle">Practice reading the Hebrew and understanding what the prayer is saying.</div>
+</header>
+
+<section class="card center" id="home">
+ <h2>Choose an Activity</h2><p class="menu-note">Start by reviewing the prayer, then challenge yourself.</p>
+ <div class="nav">
+  <button onclick="showLearn()">1. Know the Prayer</button>
+  <button onclick="startQuiz('meaning')">2. Find the Meaning</button>
+  <button onclick="startBuild()">3. Build the Hebrew</button>
+  <button onclick="startQuiz('word')">4. Word Detective</button>
+  <button onclick="startFinal()">5. Prayer Challenge</button>
+ </div>
+</section>
+
+<section id="learn" class="card hidden"><h2>1. Know the Prayer</h2><p class="small">Click each Hebrew phrase to reveal its meaning.</p><div id="phrases"></div><div class="nav"><button class="secondary" onclick="home()">← Back to Menu</button></div></section>
+
+<section id="quiz" class="card hidden">
+ <div class="progress"><div id="bar"></div></div><p class="small center" id="qcount"></p>
+ <h2 class="center" id="prompt"></h2><div class="heb center" id="qheb"></div>
+ <div id="choices"></div><div class="feedback" id="feedback"></div>
+ <div class="nav"><button id="next" class="hidden" onclick="nextQuestion()">Next →</button><button class="secondary" onclick="home()">← Back to Menu</button></div>
+</section>
+
+<section id="build" class="card hidden">
+ <div class="progress"><div id="bbar"></div></div><p class="small center" id="bcount"></p>
+ <h2 class="center">Build the Hebrew phrase</h2><p class="center" id="bmeaning"></p>
+ <div class="answerbox heb" id="answerbox"></div><div class="wordbank" id="wordbank"></div>
+ <div class="feedback" id="bfeedback"></div><div class="nav"><button onclick="checkBuild()">Check</button><button onclick="resetBuild()" class="secondary">Reset</button><button id="bnext" class="hidden" onclick="nextBuild()">Next →</button><button class="secondary" onclick="home()">← Back to Menu</button></div>
+</section>
+
+<section id="result" class="card hidden center"><h1>Prayer Mastery</h1><div id="resultText"></div><div class="nav"><button onclick="startFinal()">Try Again ↻</button><button class="secondary" onclick="home()">← Back to Menu</button></div></section>
+</main>
+<script>
+
+const prayer=[
+["וְאָהַבְתָּ אֵת יְיָ אֱלֹהֶיךָ","You should love Adonai, your God"],
+["בְּכָל לְבָבְךָ","with all your heart"],
+["וּבְכָל נַפְשְׁךָ","with all your soul"],
+["וּבְכָל מְאֹדֶךָ","with all your strength"],
+["וְהָיוּ הַדְּבָרִים הָאֵלֶּה","And these things"],
+["אֲשֶׁר אָנֹכִי מְצַוְּךָ הַיּוֹם","that I command you today"],
+["עַל לְבָבֶךָ","shall be upon your heart"],
+["וְשִׁנַּנְתָּם לְבָנֶיךָ","You should teach them to your children"],
+["וְדִבַּרְתָּ בָּם","and you should talk about them"],
+["בְּשִׁבְתְּךָ בְּבֵיתֶךָ","when you sit at home"],
+["וּבְלֶכְתְּךָ בַדֶּרֶךְ","when you are going on your way"],
+["וּבְשָׁכְבְּךָ","when you lie down"],
+["וּבְקוּמֶךָ","and when you get up"],
+["וּקְשַׁרְתָּם לְאוֹת עַל יָדֶךָ","And you should tie them as a sign on your hand"],
+["וְהָיוּ לְטֹטָפֹת בֵּין עֵינֶיךָ","And they shall be symbols between your eyes"]
+];
+const vocab=[
+["לְבָבְךָ","your heart"],["נַפְשְׁךָ","your soul"],["מְאֹדֶךָ","your strength"],["הַדְּבָרִים","the things / words"],
+["הַיּוֹם","today"],["לְבָנֶיךָ","your children"],["בְּבֵיתֶךָ","in your house"],["בַדֶּרֶךְ","on the way"],
+["יָדֶךָ","your hand"],["עֵינֶיךָ","your eyes"]
+];
+let questions=[],qi=0,score=0,mode="",reading=0,understanding=0;
+const ids=["home","learn","quiz","build","result"]; function hide(){ids.forEach(x=>document.getElementById(x).classList.add("hidden"))}
+function home(){hide();document.getElementById("home").classList.remove("hidden")}
+function shuffle(a){return [...a].sort(()=>Math.random()-.5)}
+function showLearn(){hide();let p=document.getElementById("phrases");p.innerHTML="";prayer.forEach(x=>{let d=document.createElement("div");d.className="phrase";d.innerHTML=`<div class="heb">${x[0]}</div><div class="meaning">${x[1]}</div>`;d.onclick=()=>d.classList.toggle("open");p.appendChild(d)});document.getElementById("learn").classList.remove("hidden")}
+function makeMeaning(n=8){return shuffle(prayer).slice(0,n).map(x=>({type:"understanding",prompt:"What does this phrase mean?",heb:x[0],answer:x[1],choices:shuffle([x[1],...shuffle(prayer.filter(y=>y[1]!=x[1])).slice(0,3).map(y=>y[1])])}))}
+function makeWord(n=8){return shuffle(vocab).slice(0,n).map((x,i)=>{if(i%2===0)return {type:"reading",prompt:`Find the Hebrew for “${x[1]}”`,heb:"",answer:x[0],choices:shuffle([x[0],...shuffle(vocab.filter(y=>y[0]!=x[0])).slice(0,3).map(y=>y[0])]),hebrewChoices:true};return {type:"understanding",prompt:"What does this word mean?",heb:x[0],answer:x[1],choices:shuffle([x[1],...shuffle(vocab.filter(y=>y[1]!=x[1])).slice(0,3).map(y=>y[1])])}})}
+function startQuiz(m){mode=m;score=0;reading=0;understanding=0;questions=m==="meaning"?makeMeaning():makeWord();qi=0;hide();document.getElementById("quiz").classList.remove("hidden");renderQ()}
+function renderQ(){let q=questions[qi];document.getElementById("qcount").textContent=`Question ${qi+1} of ${questions.length}`;document.getElementById("bar").style.width=(qi/questions.length*100)+"%";document.getElementById("prompt").textContent=q.prompt;document.getElementById("qheb").textContent=q.heb;let c=document.getElementById("choices");c.innerHTML="";document.getElementById("feedback").textContent="";document.getElementById("next").classList.add("hidden");q.choices.forEach(v=>{let b=document.createElement("button");b.className="choice"+(q.hebrewChoices?" heb":"");b.textContent=v;b.onclick=()=>answerQ(b,v,q);c.appendChild(b)})}
+function answerQ(b,v,q){[...document.querySelectorAll("#choices button")].forEach(x=>x.disabled=true);if(v===q.answer){b.classList.add("correct");score++;if(q.type==="reading")reading++;else understanding++;document.getElementById("feedback").textContent="✓ Correct!"}else{b.classList.add("wrong");[...document.querySelectorAll("#choices button")].find(x=>x.textContent===q.answer)?.classList.add("correct");document.getElementById("feedback").textContent="Not quite — look closely at the Hebrew."}document.getElementById("next").classList.remove("hidden")}
+function nextQuestion(){qi++;if(qi>=questions.length){if(mode==="final")showResult();else{alert(`Score: ${score}/${questions.length}`);home()}}else renderQ()}
+let builds=[],bi=0,selected=[];
+function startBuild(){
+  // Mixed difficulty: short 2-word phrases, medium phrases, and full sentences.
+  const short=prayer.filter(x=>x[0].split(" ").length===2);
+  const medium=prayer.filter(x=>x[0].split(" ").length>=3 && x[0].split(" ").length<=4);
+  const long=prayer.filter(x=>x[0].split(" ").length>=5);
+  builds=shuffle([
+    ...shuffle(short).slice(0,2),
+    ...shuffle(medium).slice(0,3),
+    ...shuffle(long).slice(0,2)
+  ]);
+  bi=0;hide();document.getElementById("build").classList.remove("hidden");renderBuild()
+}
+function renderBuild(){selected=[];let x=builds[bi];let wc=x[0].split(" ").length;let level=wc===2?"Short phrase":(wc<=4?"Phrase":"Full sentence");document.getElementById("bcount").textContent=`Phrase ${bi+1} of ${builds.length} • ${level}`;document.getElementById("bbar").style.width=(bi/builds.length*100)+"%";document.getElementById("bmeaning").textContent=x[1];document.getElementById("bfeedback").textContent="";document.getElementById("bnext").classList.add("hidden");drawWords(shuffle(x[0].split(" ")))}
+function drawWords(words){let bank=document.getElementById("wordbank"),box=document.getElementById("answerbox");bank.innerHTML="";box.innerHTML="";words.forEach((w,i)=>{let b=document.createElement("button");b.className="secondary word";b.textContent=w;b.onclick=()=>{selected.push(w);b.disabled=true;let s=document.createElement("span");s.className="tag";s.textContent=w;box.appendChild(s)};bank.appendChild(b)})}
+function resetBuild(){renderBuild()}
+function checkBuild(){let target=builds[bi][0].split(" ");if(selected.join(" ")===target.join(" ")){document.getElementById("bfeedback").textContent="✓ Correct!";document.getElementById("bnext").classList.remove("hidden")}else document.getElementById("bfeedback").textContent="Not yet — reset and look carefully at the word order."}
+function nextBuild(){bi++;if(bi>=builds.length){alert("Great work! You completed Build the Hebrew.");home()}else renderBuild()}
+function makeComplete(){
+ const bank=[
+  ["בְּכָל ______","לְבָבְךָ",["נַפְשְׁךָ","מְאֹדֶךָ","לְבָנֶיךָ"]],
+  ["וּבְכָל ______","נַפְשְׁךָ",["לְבָבְךָ","יָדֶךָ","עֵינֶיךָ"]],
+  ["וְשִׁנַּנְתָּם ______","לְבָנֶיךָ",["בְּבֵיתֶךָ","עַל יָדֶךָ","בַדֶּרֶךְ"]],
+  ["בְּשִׁבְתְּךָ ______","בְּבֵיתֶךָ",["בַדֶּרֶךְ","וּבְקוּמֶךָ","לְבָנֶיךָ"]],
+  ["וּבְלֶכְתְּךָ ______","בַדֶּרֶךְ",["בְּבֵיתֶךָ","עַל לְבָבֶךָ","בֵּין עֵינֶיךָ"]],
+  ["וּבְשָׁכְבְּךָ ______","וּבְקוּמֶךָ",["וְדִבַּרְתָּ בָּם","בְּבֵיתֶךָ","הַיּוֹם"]],
+  ["עַל ______","יָדֶךָ",["לְבָבֶךָ","עֵינֶיךָ","לְבָנֶיךָ"]],
+  ["בֵּין ______","עֵינֶיךָ",["יָדֶךָ","לְבָבְךָ","נַפְשְׁךָ"]]
+ ];
+ return shuffle(bank).slice(0,3).map(x=>({type:"reading",prompt:"Complete the prayer",heb:x[0],answer:x[1],choices:shuffle([x[1],...x[2]]),hebrewChoices:true}));
+}
+function makeSequence(){
+ const bank=[
+  ["Which phrase comes next?","בְּכָל לְבָבְךָ","וּבְכָל נַפְשְׁךָ"],
+  ["Which phrase comes next?","וּבְכָל נַפְשְׁךָ","וּבְכָל מְאֹדֶךָ"],
+  ["Which phrase comes next?","וּבְשָׁכְבְּךָ","וּבְקוּמֶךָ"],
+  ["Which phrase comes next?","בְּשִׁבְתְּךָ בְּבֵיתֶךָ","וּבְלֶכְתְּךָ בַדֶּרֶךְ"]
+ ];
+ return shuffle(bank).slice(0,2).map(x=>({type:"reading",prompt:x[0],heb:x[1],answer:x[2],choices:shuffle([x[2],...shuffle(prayer.filter(y=>y[0]!=x[2]&&y[0]!=x[1])).slice(0,3).map(y=>y[0])]),hebrewChoices:true}));
+}
+function makeConcept(){
+ const bank=[
+  ["Which phrase is about teaching the next generation?","וְשִׁנַּנְתָּם לְבָנֶיךָ",["וְדִבַּרְתָּ בָּם","וּבְשָׁכְבְּךָ","עַל לְבָבֶךָ"]],
+  ["Which phrase refers to being at home?","בְּשִׁבְתְּךָ בְּבֵיתֶךָ",["וּבְלֶכְתְּךָ בַדֶּרֶךְ","וּבְקוּמֶךָ","בֵּין עֵינֶיךָ"]],
+  ["Which phrase refers to traveling or being on your way?","וּבְלֶכְתְּךָ בַדֶּרֶךְ",["בְּשִׁבְתְּךָ בְּבֵיתֶךָ","וּבְשָׁכְבְּךָ","עַל יָדֶךָ"]],
+  ["Which phrase is about speaking about these words?","וְדִבַּרְתָּ בָּם",["וְשִׁנַּנְתָּם לְבָנֶיךָ","וּבְקוּמֶךָ","וְהָיוּ הַדְּבָרִים הָאֵלֶּה"]]
+ ];
+ return shuffle(bank).slice(0,2).map(x=>({type:"understanding",prompt:x[0],heb:"",answer:x[1],choices:shuffle([x[1],...x[2]]),hebrewChoices:true}));
+}
+function startFinal(){
+ score=reading=understanding=0;mode="final";
+ // Harder mixed assessment: translation, vocabulary, missing words,
+ // prayer sequence, and concept-to-Hebrew recognition.
+ let meaning=makeMeaning(2), word=makeWord(2), complete=makeComplete(),
+     sequence=makeSequence(), concept=makeConcept();
+ questions=shuffle([...meaning,...word,...complete,...sequence,...concept]);
+ qi=0;hide();document.getElementById("quiz").classList.remove("hidden");renderQ()
+}
+function showResult(){hide();document.getElementById("result").classList.remove("hidden");let r=questions.filter(q=>q.type==="reading").length,u=questions.filter(q=>q.type==="understanding").length;document.getElementById("resultText").innerHTML=`<p class="heb">כָּל הַכָּבוֹד!</p><div class="stats"><span>Reading: ${reading}/${r}</span><span>Understanding: ${understanding}/${u}</span></div><h2>Total: ${score}/${questions.length}</h2>`}
+
+</script></body></html>
