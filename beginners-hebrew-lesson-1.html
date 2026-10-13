@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Beginners Hebrew — Lesson 1</title>
+<style>
+:root{--ink:#203238;--blue:#4fc3d0;--orange:#ff7655;--green:#79c98b;--yellow:#ffd85a;--bg:#f5f1e8}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--ink)}
+#app{max-width:920px;margin:auto;min-height:100vh;padding:24px}
+.card{background:#fff;border-radius:24px;padding:28px;box-shadow:0 5px 18px #0002;margin:14px 0;min-height:500px}
+h1,h2{text-align:center;margin:8px 0 16px} h2{font-size:30px}
+.sub{text-align:center;font-size:20px;color:#56666b;margin:0 0 22px}
+.he{font-family:"Arial Hebrew","Noto Sans Hebrew",Arial,sans-serif;direction:rtl;font-size:60px;font-weight:700}
+.big{text-align:center;font-size:78px;margin:18px}
+.row,.choices,.letters,.tiles{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+button{border:0;border-radius:16px;padding:15px 22px;font-size:20px;font-weight:700;cursor:pointer;background:var(--blue);color:#17373b;box-shadow:0 3px 0 #0002;transition:.12s}
+button:hover{transform:translateY(-2px);box-shadow:0 5px 0 #0002}
+button:active{transform:translateY(1px);box-shadow:0 1px 0 #0002}
+button:focus-visible{outline:4px solid var(--yellow);outline-offset:3px}
+button.orange{background:var(--orange);color:white} button.secondary{background:#eee}
+.choice{min-width:150px;background:#fff;border:3px solid #dce5e7}
+.choice:hover{background:#eefbfc;border-color:var(--blue)}
+.choice.good,.choice.good:hover{background:#dff5e5;border-color:var(--green)}
+.choice.bad,.choice.bad:hover{background:#ffe1db;border-color:var(--orange)}
+.choice:disabled{cursor:default;opacity:1}
+.letter{width:120px;height:120px;background:#fff;border:4px solid #e1e7e8;font-size:64px;padding:0}
+.letter.found{background:#dff5e5;border-color:var(--green)}
+.progress{height:12px;background:#e6e6e6;border-radius:99px;overflow:hidden;margin:12px 0 25px}
+.progress div{height:100%;background:var(--blue)}
+.feedback{text-align:center;min-height:42px;font-size:21px;font-weight:700;margin:16px}
+.note{background:#fff5ca;border-radius:15px;padding:14px 18px;font-size:18px;text-align:center}
+.hidden{display:none!important}
+.score{font-size:72px;text-align:center;font-weight:800;color:#4a9ca5}
+.piece{background:#fff3c4;border:3px solid #f0c94d;font-size:52px;min-width:110px}
+.build{min-height:115px;border:3px dashed #c9d3d5;border-radius:18px;padding:12px;display:flex;flex-direction:row-reverse;gap:10px;justify-content:center;align-items:center;margin:16px auto;max-width:500px}
+.build .token{font-size:62px;font-weight:700;direction:rtl}
+@media(max-width:650px){#app{padding:10px}.card{padding:18px;min-height:460px}h2{font-size:27px}.he{font-size:50px}.letter{width:90px;height:90px;font-size:50px}.choice{min-width:120px}.big{font-size:62px}}
+</style>
+</head>
+<body><main id="app"></main>
+<script>
+const app=document.getElementById('app');
+let stage=0, findNeed=3, si=0, built=[], ri=0, qi=0, score=0, locked=false;
+
+function shell(title,subtitle,body,progress=0){
+ app.innerHTML=`<div class="card"><h2>${title}</h2>${subtitle?`<div class="sub">${subtitle}</div>`:''}
+ ${progress?`<div class="progress"><div style="width:${progress}%"></div></div>`:''}${body}</div>`;
+}
+function go(n){stage=n; render();}
+function next(){stage++; render();}
+function render(){
+ [intro,meet,findFinal,sounds,whichWord,buildWord,readIt,challengeIntro,challenge][stage]();
+}
+function intro(){
+ shell("Beginners — Lesson 1","ש • מ • ם",`<div class="big he">שָׁם</div>
+ <p class="sub">Meet new Hebrew letters, build sounds, and start reading!</p>
+ <div class="row"><button class="orange" onclick="next()">Start Lesson</button></div>`);
+}
+function meet(){
+ shell("1. Meet the Letters","Tap each letter to learn it.",`
+ <div class="letters">
+ <button class="letter" onclick="learn(this,'Shin','SH')">שׁ</button>
+ <button class="letter" onclick="learn(this,'Mem','M')">מ</button>
+ <button class="letter" onclick="learn(this,'Final Mem','M — only at the end of a word')">ם</button>
+ </div><div id="learn" class="feedback">Choose a letter.</div>
+ <div class="note">Hebrew is read from <b>right to left</b>.</div>
+ <div class="row" style="margin-top:20px"><button onclick="next()">Next</button></div>`,12);
+}
+function learn(el,name,sound){
+ document.getElementById('learn').textContent=`${name} • ${sound}`;
+ document.querySelectorAll('.letter').forEach(x=>x.style.borderColor='#e1e7e8');
+ el.style.borderColor='#4fc3d0';
+}
+function findFinal(){
+ findNeed=3;
+ shell("2. Find It!","Tap every Final Mem ם.",`<div class="letters" id="grid"></div>
+ <div id="fb" class="feedback">Find 3.</div><div class="row"><button id="findnext" class="hidden" onclick="next()">Next</button></div>`,25);
+ ['מ','ם','ש','ם','ש','מ','ם','ש','מ'].forEach(v=>{
+  const b=document.createElement('button'); b.className='letter'; b.textContent=v;
+  b.addEventListener('click',()=>{
+   if(b.classList.contains('found')) return;
+   if(v==='ם'){
+    b.classList.add('found'); findNeed--;
+    document.getElementById('fb').textContent=findNeed?`Great! Find ${findNeed} more.`:'You found them all! 🎉';
+    if(!findNeed) document.getElementById('findnext').classList.remove('hidden');
+   } else document.getElementById('fb').textContent='Try again — remember, Final Mem looks like ם.';
+  });
+  document.getElementById('grid').appendChild(b);
+ });
+}
+const soundQs=[
+ {q:'שָׁ',a:'SHA',c:['SHA','MA','SH','M']},
+ {q:'מָ',a:'MA',c:['MA','SHA','M','SH']},
+ {q:'שׁ',a:'SH',c:['M','SH','MA','SHA']}
+];
+function sounds(){ if(si>=soundQs.length){si=0;next();return;} const x=soundQs[si];
+ shell("3. Build the Sound","What sound do you read?",`<div class="big he">${x.q}</div>
+ <div class="choices">${x.c.map((c,i)=>`<button class="choice" data-i="${i}">${c}</button>`).join('')}</div>
+ <div id="fb" class="feedback"></div>`,38);
+ document.querySelectorAll('.choice').forEach(b=>b.addEventListener('click',()=>{
+  if(b.textContent===x.a){b.classList.add('good');document.getElementById('fb').textContent='Correct!';
+   setTimeout(()=>{si++;sounds()},650);
+  } else {b.classList.add('bad');document.getElementById('fb').textContent='Try again.'}
+ }));
+}
+function whichWord(){
+ shell("4. Which One Says…?","Which one says SHAM?",`
+ <div class="choices">
+ <button class="choice he" data-ok="1">שָׁם</button>
+ <button class="choice he" data-ok="0">מָשׁ</button>
+ <button class="choice he" data-ok="1">שָׁמ</button>
+ </div><div id="fb" class="feedback"></div>
+ <div class="row"><button id="wnext" class="hidden" onclick="next()">Next</button></div>`,50);
+ document.querySelectorAll('.choice').forEach(b=>b.addEventListener('click',()=>{
+  if(b.dataset.ok==='1'){
+   b.classList.add('good');
+   document.getElementById('fb').textContent='Correct — both spellings can be decoded as SHAM.';
+   document.getElementById('wnext').classList.remove('hidden');
+  } else {b.classList.add('bad');document.getElementById('fb').textContent='Try again. Decode the sounds from right to left.'}
+ }));
+}
+function buildWord(){
+ built=[];
+ shell("5. Build the Word","Build SHAM from right to left.",`
+ <div class="note">Start on the <b>right</b>. Each new piece is added to the <b>left</b>.</div>
+ <div id="build" class="build"><span style="color:#9aa7aa;font-size:18px">Start here →</span></div>
+ <div class="tiles">
+   <button class="piece he" data-piece="ם">ם</button>
+   <button class="piece he" data-piece="שָׁ">שָׁ</button>
+ </div>
+ <div id="fb" class="feedback">Tap שָׁ first.</div>
+ <div class="row"><button class="secondary" id="reset">Reset</button><button id="bnext" class="hidden" onclick="next()">Next</button></div>`,62);
+ document.querySelectorAll('.piece').forEach(b=>b.addEventListener('click',()=>addPiece(b)));
+ document.getElementById('reset').addEventListener('click',buildWord);
+}
+function addPiece(btn){
+ const v=btn.dataset.piece;
+ if(built.length===0 && v!=='שָׁ'){document.getElementById('fb').textContent='Hebrew starts on the right — begin with שָׁ.';return;}
+ built.push(v); btn.disabled=true;
+ const box=document.getElementById('build'); box.innerHTML='';
+ built.forEach(x=>{const s=document.createElement('span');s.className='token he';s.textContent=x;box.appendChild(s)});
+ if(built.length===1) document.getElementById('fb').textContent='Good. Now add ם to the left.';
+ if(built.length===2){
+  document.getElementById('fb').textContent='Great! You built שָׁם from right to left.';
+  document.getElementById('bnext').classList.remove('hidden');
+ }
+}
+const reads=[['שָׁ','SHA'],['מָ','MA'],['שָׁם','SHAM']];
+function readIt(){
+ if(ri>=reads.length){ri=0;next();return;} const x=reads[ri];
+ shell("6. Read It!","Say it out loud before you check.",`<div class="big he">${x[0]}</div>
+ <div id="reveal" class="feedback">Ready?</div><div class="row">
+ <button id="show">Show Me</button><button id="readnext">Next</button></div>`,75);
+ document.getElementById('show').onclick=()=>document.getElementById('reveal').textContent=x[1];
+ document.getElementById('readnext').onclick=()=>{ri++;readIt()};
+}
+function challengeIntro(){
+ shell("Lesson Challenge","10 quick questions. Let's see what you know!",`
+ <p class="sub">Letters • Final Mem • Sounds • Reading</p>
+ <div class="row"><button class="orange" onclick="next()">Start Challenge</button></div>`,86);
+}
+const cq=[
+ {p:'Which letter is Shin?',opts:['שׁ','מ','ם'],ok:['שׁ']},
+ {p:'Which letter is Mem?',opts:['ם','שׁ','מ'],ok:['מ']},
+ {p:'Which is Final Mem?',opts:['מ','ם','שׁ'],ok:['ם']},
+ {p:'What sound?',display:'שָׁ',opts:['SHA','MA','SH'],ok:['SHA']},
+ {p:'What sound?',display:'מָ',opts:['MA','SHA','M'],ok:['MA']},
+ {p:'Which one says SHAM?',opts:['שָׁם','מָשׁ','שָׁמ'],ok:['שָׁם','שָׁמ']},
+ {p:'Which letter belongs at the END of a word?',opts:['מ','ם','שׁ'],ok:['ם']},
+ {p:'Hebrew is read…',opts:['Right to left','Left to right'],ok:['Right to left']},
+ {p:'What sound does Shin make?',opts:['SH','M','MA'],ok:['SH']},
+ {p:'What does שָׁם say?',opts:['SHAM','MASH','SHA'],ok:['SHAM']}
+];
+function challenge(){
+ if(qi>=cq.length){finish();return;}
+ locked=false; const x=cq[qi];
+ shell(`Challenge ${qi+1} of 10`,`Score: ${score}`,`${x.display?`<div class="big he">${x.display}</div>`:''}
+ <div class="sub">${x.p}</div><div class="choices" id="answers"></div><div id="fb" class="feedback"></div>`,90+qi);
+ const answers=document.getElementById('answers');
+ x.opts.forEach(opt=>{
+  const b=document.createElement('button'); b.className='choice'+(/[א-ת]/.test(opt)?' he':''); b.textContent=opt;
+  b.addEventListener('click',()=>challengeAnswer(b,opt,x)); answers.appendChild(b);
+ });
+}
+function challengeAnswer(btn,opt,x){
+ if(locked)return; locked=true;
+ const correct=x.ok.includes(opt);
+ document.querySelectorAll('#answers .choice').forEach(b=>b.disabled=true);
+ if(correct){score++;btn.classList.add('good');document.getElementById('fb').textContent='Correct!'}
+ else{
+  btn.classList.add('bad'); document.getElementById('fb').textContent='Not quite.';
+  document.querySelectorAll('#answers .choice').forEach(b=>{if(x.ok.includes(b.textContent))b.classList.add('good')});
+ }
+ setTimeout(()=>{qi++;challenge()},1050);
+}
+function finish(){
+ shell("🎉 Lesson 1 Complete!","Nice work!",`<div class="score">${score}/10</div>
+ <p class="sub">${score===10?'Perfect score!':score>=8?'Great reading!':'Keep practicing — you’re getting there.'}</p>
+ <div class="row"><button id="again">Try Again</button></div>`,100);
+ document.getElementById('again').onclick=()=>{stage=0;si=0;ri=0;qi=0;score=0;render()};
+}
+render();
+</script></body></html>
