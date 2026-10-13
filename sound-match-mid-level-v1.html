@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sound Match · Mid-level Hebrew</title>
+<style>
+:root{--b:#3157a4;--p:#7357d8;--m:#71809a;--line:#dbe6f4;--g:#e5f7eb;--gl:#79c992}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,"Noto Sans Hebrew",sans-serif;color:#26324a;background:linear-gradient(#eef7ff,#fffaf0)}
+.page{max-width:700px;margin:auto;padding:9px 11px 18px}.hero{text-align:center;margin-bottom:6px}.k{display:inline-block;padding:4px 9px;border-radius:99px;background:#e8f0ff;color:var(--b);font-size:11px;font-weight:800}
+h1{margin:4px 0 1px;color:var(--b);font-size:25px}.ht{direction:rtl;color:var(--p);font-weight:800;font-size:17px}.sub{font-size:12px;color:var(--m)}
+.game{background:#fff;border:1px solid var(--line);border-radius:18px;padding:10px}.status{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;font-size:11px;font-weight:800;color:var(--m)}
+.stats{display:flex;gap:6px}.pill{padding:4px 7px;border-radius:99px;background:#eef2ff;color:var(--p)}
+.board{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;max-width:580px;margin:auto}
+.card{aspect-ratio:1.25/1;border:2px solid #dfe7f3;border-radius:14px;background:linear-gradient(145deg,#5476bd,#7357d8);position:relative;cursor:pointer;padding:0;box-shadow:0 3px 8px rgba(49,87,164,.10)}
+.card:not(.open):not(.matched)::before{content:"א";position:absolute;inset:0;display:grid;place-items:center;color:rgba(255,255,255,.18);font-size:47px;font-weight:900}
+.card:not(.open):not(.matched)::after{content:"?";color:white;font-size:27px;font-weight:900;position:absolute;inset:0;display:grid;place-items:center}
+.card.open,.card.matched{background:#fff}.card.matched{background:var(--g);border-color:var(--gl)}
+.face{display:none;position:absolute;inset:3px;align-items:center;justify-content:center;text-align:center;font-weight:900}.open .face,.matched .face{display:flex}
+.hebrew{direction:rtl;color:var(--p);font-size:34px}.sound{color:var(--b);font-size:17px;padding:4px}
+.note{text-align:center;color:var(--m);font-size:11px;margin-top:6px}.done{text-align:center;padding:12px}.done h2{color:var(--b);margin:5px}.score{font-size:20px;color:var(--m);margin:7px}.play{width:100%;border:0;border-radius:14px;padding:12px;background:var(--b);color:#fff;font-weight:800;font-size:15px}
+.level{color:var(--p);font-weight:800}
+@media(max-width:520px){.page{padding:6px}.board{gap:4px}.card{aspect-ratio:1.15/1;border-radius:10px}.hebrew{font-size:27px}.sound{font-size:13px}.card:not(.open):not(.matched)::before{font-size:34px}}
+</style></head>
+<body><main class="page">
+<header class="hero"><div class="k">MID-LEVEL · MEMORY GAME</div><h1>Sound Match</h1><div class="ht">התאמת צלילים</div><div class="sub">Match each Hebrew chunk with the way it sounds.</div></header>
+<section class="game" id="game"><div class="status"><div class="stats"><span class="pill" id="matches">Matches: 0 / 8</span><span class="pill" id="moves">Moves: 0</span></div><span class="level" id="level">Sound Chunks</span></div><div class="board" id="board"></div><div class="note">Tap two cards to find a Hebrew ↔ sound match.</div></section>
+</main>
+<script>
+const pairs=[
+["מַ","MA"],["מֶ","ME"],["מִ","MI"],["מוֹ","MO"],["מוּ","MU"],
+["שָׁ","SHA"],["שֶׁ","SHE"],["שִׁ","SHI"],["שׁוֹ","SHO"],["שׁוּ","SHU"],
+["לָ","LA"],["לֶ","LE"],["לִי","LI"],["לוֹ","LO"],["לוּ","LU"],
+["רַ","RA"],["רֶ","RE"],["רִי","RI"],["רוֹ","RO"],["רוּ","RU"],
+["בָּ","BA"],["בֶּ","BE"],["בִּי","BI"],["בּוֹ","BO"],["בּוּ","BU"],
+["בָ","VA"],["בֶ","VE"],["בִי","VI"],["בוֹ","VO"],["בוּ","VU"],
+["כָּ","KA"],["כֶּ","KE"],["כִּי","KI"],["כּוֹ","KO"],["כּוּ","KU"],
+["כָ","CHA"],["כֶ","CHE"],["כִי","CHI"],["כוֹ","CHO"],["כוּ","CHU"],
+["צָ","TZA"],["צֶ","TZE"],["צִי","TZI"],["צוֹ","TZO"],["צוּ","TZU"],
+["פָּ","PA"],["פֶּ","PE"],["פִּי","PI"],["פּוֹ","PO"],["פּוּ","PU"],
+["פָ","FA"],["פֶ","FE"],["פִי","FI"],["פוֹ","FO"],["פוּ","FU"],
+["תָּ","TA"],["תֶּ","TE"],["תִּי","TI"],["תּוֹ","TO"],["תּוּ","TU"],
+["סְ","S"],["בְּ","B"],["כְּ","K"],["פְּ","P"],["צְ","TZ"],["שְׁ","SH"]
+];
+function sh(a){a=[...a];for(let i=a.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+let first=null,lock=false,moves=0,matched=0;
+function start(){
+ let chosen=sh(pairs).slice(0,8),deck=[];
+ chosen.forEach((x,i)=>{deck.push({p:i,t:"hebrew",v:x[0]});deck.push({p:i,t:"sound",v:x[1]})});
+ let board=document.getElementById("board");board.innerHTML="";
+ sh(deck).forEach(x=>{let b=document.createElement("button");b.className="card";b.type="button";let f=document.createElement("span");f.className="face "+x.t;f.textContent=x.v;b.appendChild(f);b.onclick=()=>flip(b,x);board.appendChild(b)})
+}
+function flip(c,x){
+ if(lock||c.classList.contains("open")||c.classList.contains("matched"))return;
+ c.classList.add("open");
+ if(!first){first={c,x};return}
+ moves++;document.getElementById("moves").textContent="Moves: "+moves;
+ if(first.x.p===x.p&&first.x.t!==x.t){
+  first.c.className="card matched";c.className="card matched";matched++;document.getElementById("matches").textContent="Matches: "+matched+" / 8";first=null;if(matched===8)setTimeout(done,400)
+ }else{
+  lock=true;let a=first.c;setTimeout(()=>{a.classList.remove("open");c.classList.remove("open");first=null;lock=false},800)
+ }
+}
+function done(){document.getElementById("game").innerHTML='<div class="done"><div style="font-size:46px">🎉</div><h2>You matched all the sounds!</h2><div class="score">Completed in <strong>'+moves+' moves</strong>.</div><p style="color:#71809a;font-size:13px">A new game gives you a different mix of sound chunks.</p><button class="play" onclick="location.reload()">New Game ↻</button></div>'}
+start();
+</script></body></html>

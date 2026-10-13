@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Decode It! · Hebrew Decoding Challenge</title>
+<style>
+:root{--blue:#3157a4;--blue2:#5476bd;--purple:#7357d8;--ink:#26324a;--muted:#71809a;--cream:#fffaf0;--sky:#eef7ff;--line:#dbe6f4;--green:#e5f7eb;--greenline:#79c992;--red:#fff0f0;--redline:#e69696}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;color:var(--ink);font-family:Arial,"Noto Sans Hebrew",sans-serif;background:linear-gradient(180deg,var(--sky),#f8fbff 48%,var(--cream))}
+.page{max-width:760px;margin:auto;padding:10px 16px 24px}
+.hero{text-align:center;margin-bottom:10px}
+.kicker{display:inline-block;padding:5px 12px;border-radius:999px;background:#e8f0ff;color:var(--blue);font-size:12px;font-weight:800}
+h1{margin:6px 0 2px;color:var(--blue);font-size:30px}
+.he-title{direction:rtl;color:var(--purple);font-weight:800;font-size:19px}
+.sub{font-size:13px;color:var(--muted);margin-top:3px}
+.game{background:#fff;border:1.5px solid var(--line);border-radius:24px;padding:14px 18px;box-shadow:0 10px 28px rgba(49,87,164,.09)}
+.status{display:flex;justify-content:space-between;align-items:center;gap:8px;color:var(--muted);font-size:13px;font-weight:800}
+.badge{background:#eeeaff;color:var(--purple);padding:5px 10px;border-radius:999px}
+.track{height:9px;background:#edf1f7;border-radius:999px;margin:8px 0 12px;overflow:hidden}
+.fill{height:100%;width:0;background:linear-gradient(90deg,var(--blue2),var(--purple));transition:width .25s}
+.question{text-align:center;background:#f8fbff;border:1px solid #e6edf8;border-radius:19px;padding:14px 10px;margin-bottom:10px}
+.prompt{font-size:14px;font-weight:700;color:var(--muted)}
+.word{direction:rtl;color:var(--purple);font-size:54px;font-weight:900;line-height:1.35;margin:5px 0 1px}
+.hint{font-size:12px;color:var(--muted)}
+.choices{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.choice{min-height:64px;border:2px solid #e2e9f4;border-radius:17px;background:#fff;color:var(--blue);font-size:19px;font-weight:900;cursor:pointer}
+.choice:hover{border-color:#aebfe0;transform:translateY(-1px)}
+.choice.correct,.choice.reveal{background:var(--green);border-color:var(--greenline)}
+.choice.wrong{background:var(--red);border-color:var(--redline)}
+.choice:disabled{cursor:default}
+.feedback{display:none;margin-top:9px;padding:9px 12px;border-radius:15px;text-align:center;font-size:14px;font-weight:800}
+.feedback.show{display:block}.feedback.good{background:var(--green)}.feedback.bad{background:var(--red)}
+.next{display:none;width:100%;border:0;border-radius:15px;margin-top:8px;padding:11px;background:var(--blue);color:white;font-size:16px;font-weight:800;cursor:pointer}
+.next.show{display:block}
+.done{text-align:center;padding:18px 5px 8px}.done h2{color:var(--blue);font-size:27px;margin:8px}.done p{color:var(--muted)}
+.score{font-size:46px;font-weight:900;color:var(--purple);margin:8px}
+.play{width:100%;border:0;border-radius:15px;padding:13px;background:var(--blue);color:white;font-weight:800;font-size:16px;cursor:pointer}
+.note{text-align:center;color:var(--muted);font-size:11px;margin-top:8px}
+@media(max-width:520px){.page{padding:8px 10px 20px}.game{padding:12px}.word{font-size:45px}.choices{grid-template-columns:1fr}.choice{min-height:55px}h1{font-size:27px}}
+</style>
+</head>
+<body>
+<main class="page">
+<header class="hero">
+<div class="kicker">MID-LEVEL · DECODING</div>
+<h1>Decode It!</h1>
+<div class="he-title">קוראים ומפענחים</div>
+<div class="sub">Read what you see — don't rely on vocabulary.</div>
+</header>
+
+<section class="game" id="game">
+<div class="status"><span id="count">1 of 10</span><span class="badge" id="level">Warm Up</span></div>
+<div class="track"><div class="fill" id="fill"></div></div>
+<div class="question">
+<div class="prompt">Which choice matches the Hebrew?</div>
+<div class="word" id="word"></div>
+<div class="hint" id="hint"></div>
+</div>
+<div class="choices" id="choices"></div>
+<div class="feedback" id="feedback"></div>
+<button class="next" id="next">Next →</button>
+<div class="note">Some are real words and some are made-up words. Decode every letter and vowel.</div>
+</section>
+</main>
+
+<script>
+const bank = [
+ {tier:1,heb:"מָלוֹן",answer:"MALON",choices:["MALON","MELON","MALAN","NALON"]},
+ {tier:1,heb:"שׁוּבָה",answer:"SHUVAH",choices:["SHUVAH","SHOVAH","SHIVAH","SUVAH"]},
+ {tier:1,heb:"גֶּלֶם",answer:"GELEM",choices:["GELEM","GALEM","GELAM","KELEM"]},
+ {tier:1,heb:"נוֹפִי",answer:"NOFI",choices:["NOFI","NUFI","NOFE","MOFI"]},
+ {tier:2,heb:"כּוֹתֵב",answer:"KOTEV",choices:["KOTEV","KATAV","KUTEV","CHOTEV"]},
+ {tier:2,heb:"צָרִיב",answer:"TZARIV",choices:["TZARIV","TZERIV","TZARAV","TARIV"]},
+ {tier:2,heb:"חֲלוּמָה",answer:"CHALUMAH",choices:["CHALUMAH","CHELUMAH","CHALOMAH","KALUMAH"]},
+ {tier:2,heb:"בְּרִימוֹת",answer:"BRIMOT",choices:["BRIMOT","BERIMOT","BRIMAT","PRIMOT"]},
+ {tier:3,heb:"מַשְׁקוּלִים",answer:"MASHKULIM",choices:["MASHKULIM","MISHKOLIM","MASHKOLIM","MASKULIM"]},
+ {tier:3,heb:"תְּרוֹפָנִית",answer:"TROFANIT",choices:["TROFANIT","TEROFANIT","TROFENIT","DROFANIT"]},
+ {tier:3,heb:"סְגָרוּנָה",answer:"SGARUNAH",choices:["SGARUNAH","SEGARUNAH","SGORANAH","SKARUNAH"]},
+ {tier:3,heb:"פְּלוּמָרִים",answer:"PLUMARIM",choices:["PLUMARIM","PELUMARIM","PLOMARIM","BLUMARIM"]},
+ {tier:4,heb:"מִתְרוֹקְשִׁים",answer:"MITROKSHIM",choices:["MITROKSHIM","METROKSHIM","MITROSHKIM","MITROKSHAM"]},
+ {tier:4,heb:"שְׁלוּמְבָרִית",answer:"SHLUMVARIT",choices:["SHLUMVARIT","SHELUMVARIT","SHLOMVARIT","SHLUMVERIT"]},
+ {tier:4,heb:"כְּרַפְנוּלִים",answer:"KRAFNU-LIM",choices:["KRAFNU-LIM","KERAFNU-LIM","CHRAFNU-LIM","KROFNU-LIM"]},
+ {tier:4,heb:"צְמוּרָקֶת",answer:"TZMURAKET",choices:["TZMURAKET","TZEMURAKET","TZMORAKET","ZMURAKET"]}
+];
+
+function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function makeRound(){
+ const picks=[];
+ [1,2,3,4].forEach((tier)=>{
+   const n=tier===1?3:tier===2?3:2;
+   picks.push(...shuffle(bank.filter(x=>x.tier===tier)).slice(0,n));
+ });
+ return picks;
+}
+let round=makeRound(), index=0, score=0, locked=false;
+const $=id=>document.getElementById(id);
+const labels={1:"Warm Up",2:"Level Up",3:"Challenge",4:"Final Challenge"};
+
+function render(){
+ locked=false;
+ const item=round[index];
+ $("count").textContent=`${index+1} of ${round.length}`;
+ $("level").textContent=labels[item.tier];
+ $("fill").style.width=`${index/round.length*100}%`;
+ $("word").textContent=item.heb;
+ $("hint").textContent=item.tier>=3?"Take your time. Read it in chunks.":"Read every sound carefully.";
+ $("feedback").className="feedback";
+ $("feedback").textContent="";
+ $("next").className="next";
+ const c=$("choices"); c.innerHTML="";
+ shuffle(item.choices).forEach(text=>{
+   const b=document.createElement("button");
+   b.className="choice"; b.type="button"; b.textContent=text;
+   b.onclick=()=>pick(b,text,item);
+   c.appendChild(b);
+ });
+}
+function pick(button,text,item){
+ if(locked)return; locked=true;
+ const ok=text===item.answer; if(ok)score++;
+ document.querySelectorAll(".choice").forEach(b=>{
+   b.disabled=true;
+   if(b.textContent===item.answer)b.classList.add(b===button?"correct":"reveal");
+ });
+ if(!ok)button.classList.add("wrong");
+ const f=$("feedback");
+ f.className="feedback show "+(ok?"good":"bad");
+ f.textContent=ok?"✓ Nice decoding!":"Look closely: "+item.heb+" → "+item.answer;
+ $("next").textContent=index<round.length-1?"Next →":"Finish";
+ $("next").className="next show";
+}
+$("next").onclick=()=>{
+ index++;
+ if(index<round.length)render();
+ else{
+   $("game").innerHTML=`<div class="done"><div style="font-size:50px">🎉</div><h2>Decoding Complete!</h2><div class="score">${score} / ${round.length}</div><p>${score>=9?"Excellent careful reading.":score>=7?"Nice work — keep watching every vowel and letter.":"Good practice. Try another round and read each word in chunks."}</p><button class="play" onclick="location.reload()">New Round ↻</button></div>`;
+ }
+};
+render();
+</script>
+</body>
+</html>

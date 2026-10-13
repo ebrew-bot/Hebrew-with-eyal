@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Look Closely · Hebrew Decoding</title>
+<style>
+:root{--blue:#3157a4;--blue2:#5476bd;--purple:#7357d8;--ink:#26324a;--muted:#71809a;--cream:#fffaf0;--sky:#eef7ff;--line:#dbe6f4;--green:#e5f7eb;--greenline:#79c992;--red:#fff0f0;--redline:#e69696}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;color:var(--ink);font-family:Arial,"Noto Sans Hebrew",sans-serif;background:linear-gradient(180deg,var(--sky),#f8fbff 48%,var(--cream))}
+.page{max-width:780px;margin:auto;padding:10px 16px 24px}.hero{text-align:center;margin-bottom:10px}
+.kicker{display:inline-block;padding:5px 12px;border-radius:999px;background:#e8f0ff;color:var(--blue);font-size:12px;font-weight:800}
+h1{margin:6px 0 2px;color:var(--blue);font-size:30px}.he-title{direction:rtl;color:var(--purple);font-weight:800;font-size:19px}.sub{font-size:13px;color:var(--muted);margin-top:3px}
+.game{background:#fff;border:1.5px solid var(--line);border-radius:24px;padding:14px 18px;box-shadow:0 10px 28px rgba(49,87,164,.09)}
+.status{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:13px;font-weight:800}.badge{background:#eeeaff;color:var(--purple);padding:5px 10px;border-radius:999px}
+.track{height:9px;background:#edf1f7;border-radius:999px;margin:8px 0 12px;overflow:hidden}.fill{height:100%;background:linear-gradient(90deg,var(--blue2),var(--purple))}
+.question{text-align:center;background:#f8fbff;border:1px solid #e6edf8;border-radius:19px;padding:14px 10px;margin-bottom:11px}.prompt{font-size:14px;font-weight:800;color:var(--muted)}
+.target{font-size:27px;color:var(--blue);font-weight:900;margin:5px}.instruction{font-size:12px;color:var(--muted)}
+.choices{display:grid;grid-template-columns:1fr 1fr;gap:10px}.choice{min-height:92px;border:2px solid #e2e9f4;border-radius:18px;background:#fff;color:var(--purple);font-size:40px;font-weight:900;cursor:pointer;direction:rtl;padding:8px}
+.choice:hover{border-color:#aebfe0;transform:translateY(-1px)}.choice.correct,.choice.reveal{background:var(--green);border-color:var(--greenline)}.choice.wrong{background:var(--red);border-color:var(--redline)}.choice:disabled{cursor:default}
+.feedback{display:none;margin-top:9px;padding:9px 12px;border-radius:15px;text-align:center;font-size:14px;font-weight:800}.feedback.show{display:block}.good{background:var(--green)}.bad{background:var(--red)}
+.next{display:none;width:100%;border:0;border-radius:15px;margin-top:8px;padding:11px;background:var(--blue);color:#fff;font-size:16px;font-weight:800}.next.show{display:block}
+.done{text-align:center;padding:18px 5px}.done h2{color:var(--blue)}.score{font-size:46px;font-weight:900;color:var(--purple)}.play{width:100%;border:0;border-radius:15px;padding:13px;background:var(--blue);color:#fff;font-weight:800;font-size:16px}
+.note{text-align:center;color:var(--muted);font-size:11px;margin-top:8px}
+@media(max-width:520px){.page{padding:8px 10px}.game{padding:12px}.choice{font-size:33px;min-height:75px}.target{font-size:24px}}
+</style></head>
+<body><main class="page">
+<header class="hero"><div class="kicker">MID-LEVEL · DECODING</div><h1>Look Closely</h1><div class="he-title">מסתכלים מקרוב</div><div class="sub">One small change can create a different sound.</div></header>
+<section class="game" id="game">
+<div class="status"><span id="count"></span><span class="badge" id="level"></span></div><div class="track"><div class="fill" id="fill"></div></div>
+<div class="question"><div class="prompt" id="prompt"></div><div class="target" id="target"></div><div class="instruction" id="instruction"></div></div>
+<div class="choices" id="choices"></div><div class="feedback" id="feedback"></div><button class="next" id="next">Next →</button>
+<div class="note">The choices are supposed to look very similar. Check every letter and vowel.</div>
+</section></main>
+<script>
+const bank=[
+{tier:1,target:"MALON",answer:"מָלוֹן",choices:["מָלוֹן","מֶלוֹן","מָלוּן","נָלוֹן"],why:"Watch the first vowel and the final sound."},
+{tier:1,target:"SHUVAH",answer:"שׁוּבָה",choices:["שׁוּבָה","שׁוֹבָה","שׁוּבֶה","סוּבָה"],why:"Check SH vs S and U vs O."},
+{tier:1,target:"GUREM",answer:"גּוּרֶם",choices:["גּוּרֶם","גּוֹרֶם","גּוּרָם","גּוּדֶם"],why:"Only a small mark or letter changes."},
+{tier:1,target:"TOLI",answer:"תּוֹלִי",choices:["תּוֹלִי","תּוּלִי","תּוֹלֵי","תּוֹרִי"],why:"Check both vowels and the middle letter."},
+
+{tier:2,target:"CHALUMAH",answer:"חֲלוּמָה",choices:["חֲלוּמָה","חֲלוֹמָה","חֶלוּמָה","חֲנוּמָה"],why:"Look at the first vowel, U/O, and L/N."},
+{tier:2,target:"TZARIV",answer:"צָרִיב",choices:["צָרִיב","צֶרִיב","צָרֵיב","צָדִיב"],why:"Check the vowels and the middle consonant."},
+{tier:2,target:"BRIMOT",answer:"בְּרִימוֹת",choices:["בְּרִימוֹת","בֶּרִימוֹת","בְּרִימוּת","בְּדִימוֹת"],why:"Shva, O/U, and Resh/Dalet are all traps."},
+{tier:2,target:"SGARUNAH",answer:"סְגָרוּנָה",choices:["סְגָרוּנָה","סֶגָרוּנָה","סְגָרוֹנָה","סְגָדוּנָה"],why:"Don't let the overall shape fool you."},
+
+{tier:3,target:"PLUMARIM",answer:"פְּלוּמָרִים",choices:["פְּלוּמָרִים","פֶּלוּמָרִים","פְּלוֹמָרִים","פְּלוּמָלִים"],why:"Check the shva, U/O, and R/L."},
+{tier:3,target:"TZMURAKET",answer:"צְמוּרָקֶת",choices:["צְמוּרָקֶת","צֶמוּרָקֶת","צְמוֹרָקֶת","צְמוּדָקֶת"],why:"The wrong choices differ by only one detail."},
+{tier:3,target:"KRAFNU-LIM",answer:"כְּרַפְנוּלִים",choices:["כְּרַפְנוּלִים","כֶּרַפְנוּלִים","כְּרָפְנוּלִים","כְּרַפְנוּרִים"],why:"Read from right to left one chunk at a time."},
+{tier:3,target:"SHLUMVARIT",answer:"שְׁלוּמְבָרִית",choices:["שְׁלוּמְבָרִית","שֶׁלוּמְבָרִית","שְׁלוֹמְבָרִית","שְׁלוּמְבָלִית"],why:"Notice medial מ and Vet without a dagesh."},
+
+{tier:4,target:"MITROKSHIM",answer:"מִתְרוֹקְשִׁים",choices:["מִתְרוֹקְשִׁים","מֶתְרוֹקְשִׁים","מִתְרוּקְשִׁים","מִתְרוֹקְסִים"],why:"Several details are competing for your attention."},
+{tier:4,target:"PRANUMELET",answer:"פְּרָנוּמֶלֶת",choices:["פְּרָנוּמֶלֶת","פֶּרָנוּמֶלֶת","פְּרָנוֹמֶלֶת","פְּרָנוּמָלֶת"],why:"Read every vowel instead of recognizing the shape."},
+{tier:4,target:"TZMURANIT",answer:"צְמוּרָנִית",choices:["צְמוּרָנִית","צֶמוּרָנִית","צְמוֹרָנִית","צְמוּרָנֵית"],why:"The consonants stay nearly identical; the vowels decide."},
+{tier:4,target:"KREMULAV",answer:"כְּרֶמוּלָב",choices:["כְּרֶמוּלָב","כָּרֶמוּלָב","כְּרֶמוֹלָב","כְּרֶמוּלֶב"],why:"Final challenge: don't guess from the word shape."}
+];
+function sh(a){a=[...a];for(let i=a.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function round(){let r=[];[1,2,3,4].forEach(t=>r.push(...sh(bank.filter(x=>x.tier===t)).slice(0,t<3?3:2)));return r}
+let qs=round(),i=0,score=0,locked=false;const $=x=>document.getElementById(x);const labels={1:"Warm Up",2:"Level Up",3:"Challenge",4:"Final Challenge"};
+function render(){locked=false;let q=qs[i];$("count").textContent=`${i+1} of ${qs.length}`;$("level").textContent=labels[q.tier];$("fill").style.width=`${i/qs.length*100}%`;$("prompt").textContent="Which Hebrew exactly matches:";$("target").textContent=q.target;$("instruction").textContent=q.tier>=3?"Slow down — the choices differ by tiny details.":"Look at every letter and vowel.";$("feedback").className="feedback";$("next").className="next";let c=$("choices");c.innerHTML="";
+sh(q.choices).forEach(x=>{let b=document.createElement("button");b.className="choice";b.textContent=x;b.onclick=()=>pick(b,x,q);c.appendChild(b)})}
+function pick(b,x,q){if(locked)return;locked=true;let ok=x===q.answer;if(ok)score++;document.querySelectorAll(".choice").forEach(z=>{z.disabled=true;if(z.textContent===q.answer)z.classList.add(z===b?"correct":"reveal")});if(!ok)b.classList.add("wrong");let f=$("feedback");f.className="feedback show "+(ok?"good":"bad");f.textContent=(ok?"✓ Exactly right. ":"Correct answer shown. ")+q.why;$("next").textContent=i<qs.length-1?"Next →":"Finish";$("next").className="next show"}
+$("next").onclick=()=>{i++;if(i<qs.length)render();else $("game").innerHTML=`<div class="done"><div style="font-size:50px">👀</div><h2>Look Closely Complete!</h2><div class="score">${score} / ${qs.length}</div><p>${score>=9?"Excellent attention to detail.":score>=7?"Strong work — keep checking every mark.":"Try another round and slow down before choosing."}</p><button class="play" onclick="location.reload()">New Round ↻</button></div>`};render();
+</script></body></html>

@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Phrase Challenge · Mid-level Hebrew</title>
+<style>
+:root{--blue:#3157a4;--blue2:#5476bd;--purple:#7357d8;--ink:#26324a;--muted:#71809a;--cream:#fffaf0;--sky:#eef7ff;--line:#dbe6f4;--green:#e5f7eb;--greenline:#79c992;--red:#fff0f0;--redline:#e69696}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;color:var(--ink);font-family:Arial,"Noto Sans Hebrew",sans-serif;background:linear-gradient(180deg,var(--sky),#f8fbff 48%,var(--cream))}
+.page{max-width:790px;margin:auto;padding:10px 16px 24px}.hero{text-align:center;margin-bottom:10px}.kicker{display:inline-block;padding:5px 12px;border-radius:999px;background:#e8f0ff;color:var(--blue);font-size:12px;font-weight:800}
+h1{margin:6px 0 2px;color:var(--blue);font-size:30px}.he-title{direction:rtl;color:var(--purple);font-weight:800;font-size:19px}.sub{font-size:13px;color:var(--muted);margin-top:3px}
+.game{background:#fff;border:1.5px solid var(--line);border-radius:24px;padding:14px 18px;box-shadow:0 10px 28px rgba(49,87,164,.09)}
+.status{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:13px;font-weight:800}.badge{background:#eeeaff;color:var(--purple);padding:5px 10px;border-radius:999px}
+.track{height:9px;background:#edf1f7;border-radius:999px;margin:8px 0 12px;overflow:hidden}.fill{height:100%;background:linear-gradient(90deg,var(--blue2),var(--purple));transition:width .25s}
+.question{text-align:center;background:#f8fbff;border:1px solid #e6edf8;border-radius:19px;padding:14px 10px;margin-bottom:11px}.prompt{font-size:14px;font-weight:800;color:var(--muted)}
+.phrase{direction:rtl;color:var(--purple);font-size:45px;font-weight:900;line-height:1.55;margin:4px 0}.hint{font-size:12px;color:var(--muted)}
+.choices{display:grid;gap:9px}.choice{min-height:58px;border:2px solid #e2e9f4;border-radius:17px;background:#fff;color:var(--blue);font-size:18px;font-weight:900;cursor:pointer;padding:10px}
+.choice:hover{border-color:#aebfe0;transform:translateY(-1px)}.choice.correct,.choice.reveal{background:var(--green);border-color:var(--greenline)}.choice.wrong{background:var(--red);border-color:var(--redline)}.choice:disabled{cursor:default}
+.feedback{display:none;margin-top:9px;padding:9px 12px;border-radius:15px;text-align:center;font-size:14px;font-weight:800}.feedback.show{display:block}.good{background:var(--green)}.bad{background:var(--red)}
+.next{display:none;width:100%;border:0;border-radius:15px;margin-top:8px;padding:11px;background:var(--blue);color:#fff;font-size:16px;font-weight:800}.next.show{display:block}
+.done{text-align:center;padding:18px 5px}.done h2{color:var(--blue)}.score{font-size:46px;font-weight:900;color:var(--purple)}.play{width:100%;border:0;border-radius:15px;padding:13px;background:var(--blue);color:#fff;font-weight:800;font-size:16px}
+.note{text-align:center;color:var(--muted);font-size:11px;margin-top:8px}
+@media(max-width:520px){.page{padding:8px 10px}.game{padding:12px}.phrase{font-size:36px}.choice{font-size:15px;min-height:54px}}
+</style></head>
+<body><main class="page">
+<header class="hero"><div class="kicker">MID-LEVEL · FINAL DECODING</div><h1>Phrase Challenge</h1><div class="he-title">אתגר הקריאה</div><div class="sub">Don't guess the phrase. Decode it from beginning to end.</div></header>
+<section class="game" id="game">
+<div class="status"><span id="count"></span><span class="badge" id="level"></span></div><div class="track"><div class="fill" id="fill"></div></div>
+<div class="question"><div class="prompt" id="prompt">Which choice exactly matches what you read?</div><div class="phrase" id="phrase"></div><div class="hint" id="hint"></div></div>
+<div class="choices" id="choices"></div><div class="feedback" id="feedback"></div><button class="next" id="next">Next →</button>
+
+</section></main>
+<script>
+const bank=[
+{tier:1,heb:"מָלוֹן גּוּרֶם",answer:"MALON GUREM",choices:["MALON GUREM","MELON GUREM","MALON GOREM","NALON GUREM"]},
+{tier:1,heb:"שׁוּבָה תּוֹלִי",answer:"SHUVAH TOLI",choices:["SHUVAH TOLI","SHOVAH TOLI","SHUVAH TULI","SUVAH TOLI"]},
+{tier:1,heb:"צָרִיב מֶלוֹן",answer:"TZARIV MELON",choices:["TZARIV MELON","TZERIV MELON","TZARIV MALON","TARIV MELON"]},
+{tier:1,heb:"בְּרִימוֹת שָׁלִים",answer:"BRIMOT SHALIM",choices:["BRIMOT SHALIM","BERIMOT SHALIM","BRIMOT SHELIM","VRIMOT SHALIM"]},
+
+{tier:2,heb:"חֲלוּמָה סְגָרוּנָה",answer:"CHALUMAH SGARUNAH",choices:["CHALUMAH SGARUNAH","CHALOMAH SGARUNAH","CHALUMAH SEGARUNAH","KALUMAH SGARUNAH"]},
+{tier:2,heb:"פְּלוּמָרִים צְמוּרָקֶת",answer:"PLUMARIM TZMURAKET",choices:["PLUMARIM TZMURAKET","PLOMARIM TZMURAKET","PLUMARIM TZEMURAKET","BLUMARIM TZMURAKET"]},
+{tier:2,heb:"שְׁלוּמְבָרִית גּוּרֶם",answer:"SHLUMVARIT GUREM",choices:["SHLUMVARIT GUREM","SHLUMBARIT GUREM","SHLOMVARIT GUREM","SHLUMVARIT GOREM"]},
+{tier:2,heb:"כְּרַפְנוּלִים תּוֹלִי",answer:"KRAFNU-LIM TOLI",choices:["KRAFNU-LIM TOLI","KERAFNU-LIM TOLI","KRAFNO-LIM TOLI","KRAFNU-LIM TULI"]},
+
+{tier:3,heb:"מִתְרוֹקְשִׁים חֲלוּמָה",answer:"MITROKSHIM CHALUMAH",choices:["MITROKSHIM CHALUMAH","METROKSHIM CHALUMAH","MITROKSHIM CHALOMAH","MITROKSHIM KALUMAH"]},
+{tier:3,heb:"פְּרָנוּמֶלֶת צְמוּרָנִית",answer:"PRANUMELET TZMURANIT",choices:["PRANUMELET TZMURANIT","PERANUMELET TZMURANIT","PRANUMELET TZMORANIT","PRANUMALAT TZMURANIT"]},
+{tier:3,heb:"סְגָרוּנָה שְׁלוּמְבָרִית תּוֹלִי",answer:"SGARUNAH SHLUMVARIT TOLI",choices:["SGARUNAH SHLUMVARIT TOLI","SEGARUNAH SHLUMVARIT TOLI","SGARUNAH SHLUMBARIT TOLI","SGARUNAH SHLUMVARIT TULI"]},
+{tier:3,heb:"פְּלוּמָרִים כְּרַפְנוּלִים גּוּרֶם",answer:"PLUMARIM KRAFNU-LIM GUREM",choices:["PLUMARIM KRAFNU-LIM GUREM","PLOMARIM KRAFNU-LIM GUREM","PLUMARIM KERAFNU-LIM GUREM","PLUMARIM KRAFNU-LIM GOREM"]},
+
+{tier:4,heb:"צְמוּרָקֶת מִתְרוֹקְשִׁים שְׁלוּמְבָרִית",answer:"TZMURAKET MITROKSHIM SHLUMVARIT",choices:["TZMURAKET MITROKSHIM SHLUMVARIT","TZEMURAKET MITROKSHIM SHLUMVARIT","TZMURAKET METROKSHIM SHLUMVARIT","TZMURAKET MITROKSHIM SHLUMBARIT"]},
+{tier:4,heb:"כְּרַפְנוּלִים פְּרָנוּמֶלֶת חֲלוּמָה",answer:"KRAFNU-LIM PRANUMELET CHALUMAH",choices:["KRAFNU-LIM PRANUMELET CHALUMAH","KERAFNU-LIM PRANUMELET CHALUMAH","KRAFNU-LIM PERANUMELET CHALUMAH","KRAFNU-LIM PRANUMELET CHALOMAH"]},
+{tier:4,heb:"שְׁלוּמְבָרִית צְמוּרָנִית סְגָרוּנָה",answer:"SHLUMVARIT TZMURANIT SGARUNAH",choices:["SHLUMVARIT TZMURANIT SGARUNAH","SHLUMBARIT TZMURANIT SGARUNAH","SHLUMVARIT TZMORANIT SGARUNAH","SHLUMVARIT TZMURANIT SEGARUNAH"]},
+{tier:4,heb:"מִתְרוֹקְשִׁים פְּלוּמָרִים כְּרַפְנוּלִים",answer:"MITROKSHIM PLUMARIM KRAFNU-LIM",choices:["MITROKSHIM PLUMARIM KRAFNU-LIM","METROKSHIM PLUMARIM KRAFNU-LIM","MITROKSHIM PLOMARIM KRAFNU-LIM","MITROKSHIM PLUMARIM KERAFNU-LIM"]}
+];
+function sh(a){a=[...a];for(let i=a.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function round(){let r=[];[1,2,3,4].forEach(t=>r.push(...sh(bank.filter(x=>x.tier===t)).slice(0,t<3?3:2)));return r}
+let qs=round(),i=0,score=0,locked=false;const $=x=>document.getElementById(x);const labels={1:"Two Words",2:"Level Up",3:"Three Words",4:"Final Challenge"};
+function render(){locked=false;let q=qs[i];$("count").textContent=`${i+1} of ${qs.length}`;$("level").textContent=labels[q.tier];$("fill").style.width=`${i/qs.length*100}%`;$("phrase").textContent=q.heb;$("hint").textContent=q.tier===1?"Decode one word at a time.":q.tier===2?"Watch every vowel and consonant.":q.tier===3?"Three words — keep your place as you read.":"Final challenge — read the entire line before choosing.";$("feedback").className="feedback";$("next").className="next";let c=$("choices");c.innerHTML="";
+sh(q.choices).forEach(x=>{let b=document.createElement("button");b.className="choice";b.textContent=x;b.onclick=()=>pick(b,x,q);c.appendChild(b)})}
+function pick(b,x,q){if(locked)return;locked=true;let ok=x===q.answer;if(ok)score++;document.querySelectorAll(".choice").forEach(z=>{z.disabled=true;if(z.textContent===q.answer)z.classList.add(z===b?"correct":"reveal")});if(!ok)b.classList.add("wrong");let f=$("feedback");f.className="feedback show "+(ok?"good":"bad");f.textContent=ok?"✓ Excellent — you decoded the whole phrase.":"Correct reading: "+q.answer;$("next").textContent=i<qs.length-1?"Next →":"Finish";$("next").className="next show"}
+$("next").onclick=()=>{i++;if(i<qs.length)render();else $("game").innerHTML=`<div class="done"><div style="font-size:50px">🏆</div><h2>Phrase Challenge Complete!</h2><div class="score">${score} / ${qs.length}</div><p>${score>=9?"Excellent — you're reading beyond individual words.":score>=7?"Strong decoding. Keep tracking each word carefully.":"Try another round and decode each word separately before reading the whole line."}</p><button class="play" onclick="location.reload()">New Round ↻</button></div>`};render();
+</script></body></html>
